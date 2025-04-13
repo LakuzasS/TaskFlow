@@ -1,0 +1,920 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Backend Modules &mdash; SAE502-TaskFlow 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Frontend Modules" href="frontend.html" />
+    <link rel="prev" title="API Modules" href="api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            SAE502-TaskFlow
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table des matières</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Modules</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Backend Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#backend.auth.login_with_google"><code class="docutils literal notranslate"><span class="pre">login_with_google()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backend.auth.create_user_google"><code class="docutils literal notranslate"><span class="pre">create_user_google()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backend.auth.send_confirmation_email"><code class="docutils literal notranslate"><span class="pre">send_confirmation_email()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backend.db_api.DB_API"><code class="docutils literal notranslate"><span class="pre">DB_API</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.check_user_credentials"><code class="docutils literal notranslate"><span class="pre">DB_API.check_user_credentials()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.add_user"><code class="docutils literal notranslate"><span class="pre">DB_API.add_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_task_infoID_by_taskID"><code class="docutils literal notranslate"><span class="pre">DB_API.get_task_infoID_by_taskID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_task_infoID_by_subtaskID"><code class="docutils literal notranslate"><span class="pre">DB_API.get_task_infoID_by_subtaskID()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_all_infos_from_email"><code class="docutils literal notranslate"><span class="pre">DB_API.get_all_infos_from_email()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.delete_user_status"><code class="docutils literal notranslate"><span class="pre">DB_API.delete_user_status()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_all_users"><code class="docutils literal notranslate"><span class="pre">DB_API.get_all_users()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_project_id_by_project_name"><code class="docutils literal notranslate"><span class="pre">DB_API.get_project_id_by_project_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_projects_by_user_id"><code class="docutils literal notranslate"><span class="pre">DB_API.get_projects_by_user_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_tasks_by_project_id"><code class="docutils literal notranslate"><span class="pre">DB_API.get_tasks_by_project_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_subtasks_by_task_id"><code class="docutils literal notranslate"><span class="pre">DB_API.get_subtasks_by_task_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_users_in_project_by_project_id"><code class="docutils literal notranslate"><span class="pre">DB_API.get_users_in_project_by_project_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_users_in_tasks_group_by_group_id"><code class="docutils literal notranslate"><span class="pre">DB_API.get_users_in_tasks_group_by_group_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_all_status"><code class="docutils literal notranslate"><span class="pre">DB_API.get_all_status()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.add_project"><code class="docutils literal notranslate"><span class="pre">DB_API.add_project()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.add_user_to_group"><code class="docutils literal notranslate"><span class="pre">DB_API.add_user_to_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.add_task_info"><code class="docutils literal notranslate"><span class="pre">DB_API.add_task_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.add_task"><code class="docutils literal notranslate"><span class="pre">DB_API.add_task()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.add_subtask"><code class="docutils literal notranslate"><span class="pre">DB_API.add_subtask()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.add_user_to_task_group"><code class="docutils literal notranslate"><span class="pre">DB_API.add_user_to_task_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_user_id_by_username"><code class="docutils literal notranslate"><span class="pre">DB_API.get_user_id_by_username()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_all_projects"><code class="docutils literal notranslate"><span class="pre">DB_API.get_all_projects()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_all_tasks"><code class="docutils literal notranslate"><span class="pre">DB_API.get_all_tasks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_user_email"><code class="docutils literal notranslate"><span class="pre">DB_API.get_user_email()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_email"><code class="docutils literal notranslate"><span class="pre">DB_API.get_email()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_user"><code class="docutils literal notranslate"><span class="pre">DB_API.get_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_userID_by_email"><code class="docutils literal notranslate"><span class="pre">DB_API.get_userID_by_email()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.add_user_status"><code class="docutils literal notranslate"><span class="pre">DB_API.add_user_status()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.add_task_group"><code class="docutils literal notranslate"><span class="pre">DB_API.add_task_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.delete_user"><code class="docutils literal notranslate"><span class="pre">DB_API.delete_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_project_in_users_groups_userid"><code class="docutils literal notranslate"><span class="pre">DB_API.get_project_in_users_groups_userid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.delete_task"><code class="docutils literal notranslate"><span class="pre">DB_API.delete_task()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.set_invites_status"><code class="docutils literal notranslate"><span class="pre">DB_API.set_invites_status()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.set_user_permission"><code class="docutils literal notranslate"><span class="pre">DB_API.set_user_permission()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.set_user_status"><code class="docutils literal notranslate"><span class="pre">DB_API.set_user_status()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_totp_secret"><code class="docutils literal notranslate"><span class="pre">DB_API.get_totp_secret()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_user_permission"><code class="docutils literal notranslate"><span class="pre">DB_API.get_user_permission()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.set_totp_secret"><code class="docutils literal notranslate"><span class="pre">DB_API.set_totp_secret()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.delete_project"><code class="docutils literal notranslate"><span class="pre">DB_API.delete_project()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_task_info_by_task_id"><code class="docutils literal notranslate"><span class="pre">DB_API.get_task_info_by_task_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.get_subtask_info_by_subtask_id"><code class="docutils literal notranslate"><span class="pre">DB_API.get_subtask_info_by_subtask_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.delete_user_group"><code class="docutils literal notranslate"><span class="pre">DB_API.delete_user_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.delete_tasks_groups"><code class="docutils literal notranslate"><span class="pre">DB_API.delete_tasks_groups()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.delete_tasks_infos"><code class="docutils literal notranslate"><span class="pre">DB_API.delete_tasks_infos()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.delete_tasks"><code class="docutils literal notranslate"><span class="pre">DB_API.delete_tasks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.check_projects"><code class="docutils literal notranslate"><span class="pre">DB_API.check_projects()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.delete_users_from_users_tasks_groups"><code class="docutils literal notranslate"><span class="pre">DB_API.delete_users_from_users_tasks_groups()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.update_task_status"><code class="docutils literal notranslate"><span class="pre">DB_API.update_task_status()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.update_task_title"><code class="docutils literal notranslate"><span class="pre">DB_API.update_task_title()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.update_task_description"><code class="docutils literal notranslate"><span class="pre">DB_API.update_task_description()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.update_task_priority"><code class="docutils literal notranslate"><span class="pre">DB_API.update_task_priority()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backend.db_api.DB_API.update_task_date"><code class="docutils literal notranslate"><span class="pre">DB_API.update_task_date()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#backend.db_helper.cm_cursor"><code class="docutils literal notranslate"><span class="pre">cm_cursor()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backend.db_helper.create_conn"><code class="docutils literal notranslate"><span class="pre">create_conn()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backend.db_helper.cm_conn"><code class="docutils literal notranslate"><span class="pre">cm_conn()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backend.TaskFlow.send_email"><code class="docutils literal notranslate"><span class="pre">send_email()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backend.TaskFlow.invite_user_to_project"><code class="docutils literal notranslate"><span class="pre">invite_user_to_project()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backend.TaskFlow.check_tasks"><code class="docutils literal notranslate"><span class="pre">check_tasks()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backend.TaskFlow.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backend.TaskFlow.delete_user"><code class="docutils literal notranslate"><span class="pre">delete_user()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backend.TaskFlow.update_task_info"><code class="docutils literal notranslate"><span class="pre">update_task_info()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="frontend.html">Frontend Modules</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SAE502-TaskFlow</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Backend Modules</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/backend.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="backend-modules">
+<h1>Backend Modules<a class="headerlink" href="#backend-modules" title="Link to this heading"></a></h1>
+<p>Liste des modules Backend :</p>
+<dl class="py function" id="module-backend.auth">
+<dt class="sig sig-object py" id="backend.auth.login_with_google">
+<span class="sig-prename descclassname"><span class="pre">backend.auth.</span></span><span class="sig-name descname"><span class="pre">login_with_google</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_token_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend/auth.html#login_with_google"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend.auth.login_with_google" title="Link to this definition"></a></dt>
+<dd><p>Connecte un utilisateur avec un token ID Google en vérifiant ses informations et en l’ajoutant à la base de données si nécessaire.</p>
+<p>Cette fonction vérifie l’authenticité du token ID fourni, extrait les informations utilisateur
+(nom et e-mail) et tente de récupérer les informations associées à cet e-mail depuis la base de données.
+Si l’utilisateur n’existe pas, il est créé et un e-mail de confirmation est envoyé.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id_token_str</strong> (<em>str</em>) – Le token ID Google à vérifier.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True si l’utilisateur est authentifié ou créé avec succès, False sinon.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend.auth.create_user_google">
+<span class="sig-prename descclassname"><span class="pre">backend.auth.</span></span><span class="sig-name descname"><span class="pre">create_user_google</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend/auth.html#create_user_google"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend.auth.create_user_google" title="Link to this definition"></a></dt>
+<dd><p>Crée un utilisateur Google dans la base de données.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> (<em>str</em>) – Le nom d’utilisateur de Google.</p></li>
+<li><p><strong>email</strong> (<em>str</em>) – L’adresse e-mail de l’utilisateur Google.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend.auth.send_confirmation_email">
+<span class="sig-prename descclassname"><span class="pre">backend.auth.</span></span><span class="sig-name descname"><span class="pre">send_confirmation_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">to_email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend/auth.html#send_confirmation_email"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend.auth.send_confirmation_email" title="Link to this definition"></a></dt>
+<dd><p>Envoie un e-mail de confirmation à l’utilisateur après la création de son compte.</p>
+<p>Cette fonction utilise l’API Gmail pour envoyer un e-mail contenant un message de confirmation de création
+de compte à l’utilisateur spécifié. Elle s’assure également que le token d’authentification est valide avant
+d’envoyer l’e-mail.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>to_email</strong> (<em>str</em>) – L’adresse e-mail de l’utilisateur à qui envoyer le message de confirmation.</p></li>
+<li><p><strong>username</strong> (<em>str</em>) – Le nom de l’utilisateur, utilisé dans le corps de l’e-mail.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class" id="module-backend.db_api">
+<span id="module-backend.config"></span><dt class="sig sig-object py" id="backend.db_api.DB_API">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">backend.db_api.</span></span><span class="sig-name descname"><span class="pre">DB_API</span></span><a class="reference internal" href="_modules/backend/db_api.html#DB_API"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend.db_api.DB_API" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Classe permettant d’exécuter les commandes vers la DB SQL.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.check_user_credentials">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_user_credentials</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.check_user_credentials" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.add_user">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.add_user" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_task_infoID_by_taskID">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_task_infoID_by_taskID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_task_infoID_by_taskID" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_task_infoID_by_subtaskID">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_task_infoID_by_subtaskID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_task_infoID_by_subtaskID" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_all_infos_from_email">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_all_infos_from_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_all_infos_from_email" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.delete_user_status">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_user_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.delete_user_status" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_all_users">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_all_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_all_users" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_project_id_by_project_name">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_project_id_by_project_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_project_id_by_project_name" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_projects_by_user_id">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_projects_by_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_projects_by_user_id" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_tasks_by_project_id">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_tasks_by_project_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_tasks_by_project_id" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_subtasks_by_task_id">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_subtasks_by_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_subtasks_by_task_id" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_users_in_project_by_project_id">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_users_in_project_by_project_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_users_in_project_by_project_id" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_users_in_tasks_group_by_group_id">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_users_in_tasks_group_by_group_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_users_in_tasks_group_by_group_id" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_all_status">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_all_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_all_status" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.add_project">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.add_project" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.add_user_to_group">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_user_to_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.add_user_to_group" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.add_task_info">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_task_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.add_task_info" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.add_task">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.add_task" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.add_subtask">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_subtask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.add_subtask" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.add_user_to_task_group">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_user_to_task_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.add_user_to_task_group" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_user_id_by_username">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_user_id_by_username</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_user_id_by_username" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_all_projects">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_all_projects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_all_projects" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_all_tasks">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_all_tasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_all_tasks" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_user_email">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_user_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_user_email" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_email">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_email" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_user">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_user" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_userID_by_email">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_userID_by_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_userID_by_email" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.add_user_status">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_user_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.add_user_status" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.add_task_group">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_task_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.add_task_group" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.delete_user">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.delete_user" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_project_in_users_groups_userid">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_project_in_users_groups_userid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_project_in_users_groups_userid" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.delete_task">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.delete_task" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.set_invites_status">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_invites_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.set_invites_status" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.set_user_permission">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_user_permission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.set_user_permission" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.set_user_status">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_user_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.set_user_status" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_totp_secret">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_totp_secret</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_totp_secret" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_user_permission">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_user_permission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_user_permission" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.set_totp_secret">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_totp_secret</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.set_totp_secret" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.delete_project">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.delete_project" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_task_info_by_task_id">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_task_info_by_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_task_info_by_task_id" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.get_subtask_info_by_subtask_id">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_subtask_info_by_subtask_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.get_subtask_info_by_subtask_id" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …]] | <em>Tuple</em>[<em>Decimal</em> | bytes | <em>date</em> | <em>datetime</em> | float | int | <em>Set</em>[str] | str | <em>timedelta</em> | None | <em>time</em>, …] | None | str | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.delete_user_group">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_user_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.delete_user_group" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.delete_tasks_groups">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_tasks_groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.delete_tasks_groups" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.delete_tasks_infos">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_tasks_infos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.delete_tasks_infos" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.delete_tasks">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_tasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.delete_tasks" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.check_projects">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_projects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.check_projects" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.delete_users_from_users_tasks_groups">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_users_from_users_tasks_groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.delete_users_from_users_tasks_groups" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.update_task_status">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_task_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.update_task_status" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.update_task_title">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_task_title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.update_task_title" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.update_task_description">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_task_description</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.update_task_description" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.update_task_priority">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_task_priority</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.update_task_priority" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="backend.db_api.DB_API.update_task_date">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_task_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.db_api.DB_API.update_task_date" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> | Exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function" id="module-backend.db_helper">
+<dt class="sig sig-object py" id="backend.db_helper.cm_cursor">
+<span class="sig-prename descclassname"><span class="pre">backend.db_helper.</span></span><span class="sig-name descname"><span class="pre">cm_cursor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend/db_helper.html#cm_cursor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend.db_helper.cm_cursor" title="Link to this definition"></a></dt>
+<dd><p>Ce décorateur créer un curseur depuis une connexion vers une bdd.</p>
+<p>Ce décorateur est utilsé pour chaque requête SQL vers la base de données.
+Il crée automatiquement le curseur, puis le close une fois la fonction terminée.
+Utilisé en tant que “context manager”.
+:return: Le résultat de la fonction enfante ou une Exception en cas d’erreur</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Callable</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend.db_helper.create_conn">
+<span class="sig-prename descclassname"><span class="pre">backend.db_helper.</span></span><span class="sig-name descname"><span class="pre">create_conn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend/db_helper.html#create_conn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend.db_helper.create_conn" title="Link to this definition"></a></dt>
+<dd><p>Cette fonction est utilisée pour créer la connexion vers la base de données.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong> (<em>str</em>) – Ip ou le nom du server MYSQL</p></li>
+<li><p><strong>user</strong> (<em>str</em>) – Utilisateur se connectant au server MYSQL</p></li>
+<li><p><strong>password</strong> (<em>str</em>) – Password de l’utilisateur</p></li>
+<li><p><strong>database</strong> (<em>str</em>) – La base de donnée cible</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>La connexion sinon None en cas d’echec</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>MySQLConnectionAbstract</em> | <em>PooledMySQLConnection</em> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend.db_helper.cm_conn">
+<span class="sig-prename descclassname"><span class="pre">backend.db_helper.</span></span><span class="sig-name descname"><span class="pre">cm_conn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend/db_helper.html#cm_conn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend.db_helper.cm_conn" title="Link to this definition"></a></dt>
+<dd><p>Ce décorateur est utilisé pour les rollback ou les commits sur la DB.</p>
+<p>Utilisé seulement pour les ajouts dans la base de données,
+les modifications et les suppressions, en tant que “context manager”.
+:return: True si commit, Exception si rollback</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Callable</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function" id="module-backend.TaskFlow">
+<span id="module-backend.db_requests"></span><dt class="sig sig-object py" id="backend.TaskFlow.send_email">
+<span class="sig-prename descclassname"><span class="pre">backend.TaskFlow.</span></span><span class="sig-name descname"><span class="pre">send_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend/TaskFlow.html#send_email"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend.TaskFlow.send_email" title="Link to this definition"></a></dt>
+<dd><p>Envoie un email à un destinataire avec un sujet et un corps donnés.</p>
+<p>Cette fonction utilise un compte de messagerie parmi ceux définis dans la liste <cite>accounts</cite>.
+Elle sélectionne le compte suivant dans la liste à chaque envoi, en utilisant un mécanisme de rotation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subject</strong> – Sujet de l’email.</p></li>
+<li><p><strong>body</strong> – Corps de l’email.</p></li>
+<li><p><strong>to</strong> – Adresse email du destinataire.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend.TaskFlow.invite_user_to_project">
+<span class="sig-prename descclassname"><span class="pre">backend.TaskFlow.</span></span><span class="sig-name descname"><span class="pre">invite_user_to_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend/TaskFlow.html#invite_user_to_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend.TaskFlow.invite_user_to_project" title="Link to this definition"></a></dt>
+<dd><p>Invite un utilisateur à rejoindre un projet.</p>
+<p>Cette fonction récupère l’ID du projet et de l’utilisateur dans la base de données,
+puis envoie un email d’invitation à l’utilisateur avec les détails du projet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> – Nom d’utilisateur de l’utilisateur à inviter.</p></li>
+<li><p><strong>project_name</strong> – Nom du projet auquel l’utilisateur est invité.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend.TaskFlow.check_tasks">
+<span class="sig-prename descclassname"><span class="pre">backend.TaskFlow.</span></span><span class="sig-name descname"><span class="pre">check_tasks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend/TaskFlow.html#check_tasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend.TaskFlow.check_tasks" title="Link to this definition"></a></dt>
+<dd><p>Vérifie les tâches en fonction de leur date d’échéance et envoie des rappels par email.</p>
+<p>Cette fonction vérifie les tâches dans la base de données pour déterminer si leur date limite est passée ou approche.
+Si la tâche est en retard, un email est envoyé à l’utilisateur assigné. Si la date limite approche, un rappel est envoyé.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend.TaskFlow.main">
+<span class="sig-prename descclassname"><span class="pre">backend.TaskFlow.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend/TaskFlow.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend.TaskFlow.main" title="Link to this definition"></a></dt>
+<dd><p>Affiche un menu principal et permet d’exécuter diverses actions, telles que la gestion des utilisateurs, projets et tâches.</p>
+<p>Cette fonction propose à l’utilisateur un menu interactif pour créer des utilisateurs et des projets, inviter des utilisateurs,
+ajouter des tâches, vérifier les tâches en retard ou envoyant des rappels.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend.TaskFlow.delete_user">
+<span class="sig-prename descclassname"><span class="pre">backend.TaskFlow.</span></span><span class="sig-name descname"><span class="pre">delete_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend/TaskFlow.html#delete_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend.TaskFlow.delete_user" title="Link to this definition"></a></dt>
+<dd><p>Permet de delete un utilisateur de la db et toutes ses dépendances.</p>
+<p>Cette fonction renvoie un boolean. En cas d’échec,
+elle renverra False et en cas de succes, elle renverra True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> (<em>str</em>) – Username de l’utilisateur</p></li>
+<li><p><strong>user_id</strong> (<em>int</em><em> | </em><em>None</em>) – ID de l’utilisateur (optionnel)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+<p>Exemple:
+&gt;&gt;&gt; err = delete_user(“toto”)
+&gt;&gt;&gt; if err:
+&gt;&gt;&gt;     print(“supprimé avec succes”)
+&gt;&gt;&gt; err = delete_user(user_id=4)
+&gt;&gt;&gt; if err:
+&gt;&gt;&gt;     print(“supprimé avec succes”)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backend.TaskFlow.update_task_info">
+<span class="sig-prename descclassname"><span class="pre">backend.TaskFlow.</span></span><span class="sig-name descname"><span class="pre">update_task_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_info_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dead_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">covered</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assign</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backend/TaskFlow.html#update_task_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backend.TaskFlow.update_task_info" title="Link to this definition"></a></dt>
+<dd><p>Met à jour une tâche dans la table tasks_infos.</p>
+<p>Cette fonction renvoie un boolean. En cas d’échec,
+elle renverra False et en cas de succes, elle renverra True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_info_id</strong> (<em>int</em>) – ID de la tâche à modifier.</p></li>
+<li><p><strong>status</strong> (<em>int</em><em> | </em><em>None</em>) – (optionnel) Nouveau statut de la tâche.</p></li>
+<li><p><strong>priority</strong> (<em>int</em><em> | </em><em>None</em>) – (optionnel) Nouvelle priorité de la tâche.</p></li>
+<li><p><strong>title</strong> (<em>str</em><em> | </em><em>None</em>) – (optionnel) Nouveau titre de la tâche.</p></li>
+<li><p><strong>description</strong> (<em>str</em><em> | </em><em>None</em>) – (optionnel) Nouvelle description de la tâche.</p></li>
+<li><p><strong>dead_line</strong> (<em>datetime</em><em> | </em><em>None</em>) – (optionnel) Nouvelle échéance (format datetime).</p></li>
+<li><p><strong>covered</strong> (<em>bool</em><em> | </em><em>None</em>) – (optionnel) Nouvel état “covered” (booléen).</p></li>
+<li><p><strong>assign</strong> (<em>int</em><em> | </em><em>None</em>) – (optionnel) Nouvel assigné (ID de tasks_groups).</p></li>
+</ul>
+</dd>
+</dl>
+<p>Exemple:
+&gt;&gt;&gt; success = update_task_info(task_info_id=4, title=’nouveau title’, priority=2, assign=2)
+&gt;&gt;&gt; if success:
+&gt;&gt;&gt;     print(“supprimé avec succes”)
+&gt;&gt;&gt; success = update_task_info(task_info_id=4, status=2)
+&gt;&gt;&gt; if success:
+&gt;&gt;&gt;     print(“supprimé avec succes”)</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api.html" class="btn btn-neutral float-left" title="API Modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="frontend.html" class="btn btn-neutral float-right" title="Frontend Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, TaskFlow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1555 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frontend Modules &mdash; SAE502-TaskFlow 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Backend Modules" href="backend.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            SAE502-TaskFlow
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table des matières</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backend.html">Backend Modules</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Frontend Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.authentification.send_otp_email"><code class="docutils literal notranslate"><span class="pre">send_otp_email()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.authentification.send_totp_to_user"><code class="docutils literal notranslate"><span class="pre">send_totp_to_user()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.authentification.verify_totp_code"><code class="docutils literal notranslate"><span class="pre">verify_totp_code()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.authentification.OtpDialog"><code class="docutils literal notranslate"><span class="pre">OtpDialog</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.OtpDialog.setup_ui"><code class="docutils literal notranslate"><span class="pre">OtpDialog.setup_ui()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.OtpDialog.get_code"><code class="docutils literal notranslate"><span class="pre">OtpDialog.get_code()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow.__init__"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow.setupUi"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.setupUi()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow.show_signup_form"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.show_signup_form()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow.update_form_state"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.update_form_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow.handle_login"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.handle_login()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow.login_with_google"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.login_with_google()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow.connect_google_user"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.connect_google_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow.open_main_window_google"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.open_main_window_google()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow.handle_signup"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.handle_signup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow.validate_email"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.validate_email()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow.get_or_create_user_secret"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.get_or_create_user_secret()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow.show_error_message"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.show_error_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow.clear_error_message"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.clear_error_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow.show_success_message"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.show_success_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow.open_main_window"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.open_main_window()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow.retranslateUi"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.retranslateUi()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.authentification.MainWindow"><code class="docutils literal notranslate"><span class="pre">MainWindow</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.MainWindow.__init__"><code class="docutils literal notranslate"><span class="pre">MainWindow.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.authentification.MainWindow.closeEvent"><code class="docutils literal notranslate"><span class="pre">MainWindow.closeEvent()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.main.load_sf_font"><code class="docutils literal notranslate"><span class="pre">load_sf_font()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.main.load_stylesheet"><code class="docutils literal notranslate"><span class="pre">load_stylesheet()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.main.run_flask"><code class="docutils literal notranslate"><span class="pre">run_flask()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.pagePrincipale.InviteUsersDialog"><code class="docutils literal notranslate"><span class="pre">InviteUsersDialog</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.InviteUsersDialog.setup_ui"><code class="docutils literal notranslate"><span class="pre">InviteUsersDialog.setup_ui()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.InviteUsersDialog.load_users"><code class="docutils literal notranslate"><span class="pre">InviteUsersDialog.load_users()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.InviteUsersDialog.get_selected_users"><code class="docutils literal notranslate"><span class="pre">InviteUsersDialog.get_selected_users()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.setupUi"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.setupUi()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.set_current_user"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.set_current_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.deconnexion"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.deconnexion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.delete_account"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.delete_account()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.add_project"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.add_project()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.load_projects"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.load_projects()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.project_clicked"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.project_clicked()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.display_users_in_project"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.display_users_in_project()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.update_users_status"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.update_users_status()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.load_users_for_project"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.load_users_for_project()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.add_selected_user"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.add_selected_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.remove_selected_user_from_list"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.remove_selected_user_from_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.is_user_already_assigned"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.is_user_already_assigned()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.add_task"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.add_task()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.load_tasks_for_project"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.load_tasks_for_project()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.set_task_background"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.set_task_background()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.refresh_task_status"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.refresh_task_status()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.add_subtask"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.add_subtask()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.delete_task"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.delete_task()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.delete_project"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.delete_project()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.modify_task"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.modify_task()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.mark_completed"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.mark_completed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.mark_uncompleted"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.mark_uncompleted()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.update_subtask_availability"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.update_subtask_availability()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.retranslateUi"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.retranslateUi()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.accept_project"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.accept_project()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.refuse_project"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.refuse_project()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.delete_user"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.delete_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.send_invitation"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.send_invitation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.get_invitation"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.get_invitation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.set_invite"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.set_invite()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.get_user_to_invite"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.get_user_to_invite()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.show_invite_dialog"><code class="docutils literal notranslate"><span class="pre">Ui_MainWindow.show_invite_dialog()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.pagePrincipale.MainWindow"><code class="docutils literal notranslate"><span class="pre">MainWindow</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.MainWindow.__init__"><code class="docutils literal notranslate"><span class="pre">MainWindow.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.MainWindow.closeEvent"><code class="docutils literal notranslate"><span class="pre">MainWindow.closeEvent()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.pagePrincipale.UserRoleDialog"><code class="docutils literal notranslate"><span class="pre">UserRoleDialog</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.UserRoleDialog.accept"><code class="docutils literal notranslate"><span class="pre">UserRoleDialog.accept()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.pagePrincipale.UserStatusWidget"><code class="docutils literal notranslate"><span class="pre">UserStatusWidget</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.UserStatusWidget.mousePressEvent"><code class="docutils literal notranslate"><span class="pre">UserStatusWidget.mousePressEvent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.UserStatusWidget.on_user_clicked"><code class="docutils literal notranslate"><span class="pre">UserStatusWidget.on_user_clicked()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.pagePrincipale.TaskDialog"><code class="docutils literal notranslate"><span class="pre">TaskDialog</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.TaskDialog.setup_ui"><code class="docutils literal notranslate"><span class="pre">TaskDialog.setup_ui()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.TaskDialog.load_users"><code class="docutils literal notranslate"><span class="pre">TaskDialog.load_users()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.TaskDialog.add_selected_user"><code class="docutils literal notranslate"><span class="pre">TaskDialog.add_selected_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.TaskDialog.remove_selected_user"><code class="docutils literal notranslate"><span class="pre">TaskDialog.remove_selected_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.TaskDialog.is_user_already_assigned"><code class="docutils literal notranslate"><span class="pre">TaskDialog.is_user_already_assigned()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.TaskDialog.get_form_data"><code class="docutils literal notranslate"><span class="pre">TaskDialog.get_form_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.pagePrincipale.SubtaskDialog"><code class="docutils literal notranslate"><span class="pre">SubtaskDialog</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.SubtaskDialog.setup_ui"><code class="docutils literal notranslate"><span class="pre">SubtaskDialog.setup_ui()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.SubtaskDialog.load_users"><code class="docutils literal notranslate"><span class="pre">SubtaskDialog.load_users()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.SubtaskDialog.add_selected_user"><code class="docutils literal notranslate"><span class="pre">SubtaskDialog.add_selected_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.SubtaskDialog.remove_selected_user"><code class="docutils literal notranslate"><span class="pre">SubtaskDialog.remove_selected_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.SubtaskDialog.is_user_already_assigned"><code class="docutils literal notranslate"><span class="pre">SubtaskDialog.is_user_already_assigned()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.SubtaskDialog.get_form_data"><code class="docutils literal notranslate"><span class="pre">SubtaskDialog.get_form_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#front_end.authentification.pagePrincipale.TaskEditDialog"><code class="docutils literal notranslate"><span class="pre">TaskEditDialog</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.TaskEditDialog.add_selected_user"><code class="docutils literal notranslate"><span class="pre">TaskEditDialog.add_selected_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.TaskEditDialog.remove_selected_user"><code class="docutils literal notranslate"><span class="pre">TaskEditDialog.remove_selected_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.TaskEditDialog.is_user_already_assigned"><code class="docutils literal notranslate"><span class="pre">TaskEditDialog.is_user_already_assigned()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#front_end.authentification.pagePrincipale.TaskEditDialog.get_form_data"><code class="docutils literal notranslate"><span class="pre">TaskEditDialog.get_form_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SAE502-TaskFlow</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Frontend Modules</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/frontend.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="frontend-modules">
+<h1>Frontend Modules<a class="headerlink" href="#frontend-modules" title="Link to this heading"></a></h1>
+<p>Liste des modules Frontend :</p>
+<dl class="py function" id="module-front_end.authentification.authentification">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.send_otp_email">
+<span class="sig-prename descclassname"><span class="pre">front_end.authentification.authentification.</span></span><span class="sig-name descname"><span class="pre">send_otp_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recipient_email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">otp_code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#send_otp_email"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.send_otp_email" title="Link to this definition"></a></dt>
+<dd><p>Envoie l’OTP (code TOTP) par email au user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>recipient_email</strong> (<em>str</em>)</p></li>
+<li><p><strong>otp_code</strong> (<em>str</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.send_totp_to_user">
+<span class="sig-prename descclassname"><span class="pre">front_end.authentification.authentification.</span></span><span class="sig-name descname"><span class="pre">send_totp_to_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">totp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_email</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#send_totp_to_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.send_totp_to_user" title="Link to this definition"></a></dt>
+<dd><p>Génère le code TOTP et l’envoie par mail.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user_email</strong> (<em>str</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.verify_totp_code">
+<span class="sig-prename descclassname"><span class="pre">front_end.authentification.authentification.</span></span><span class="sig-name descname"><span class="pre">verify_totp_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">totp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_input_code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#verify_totp_code"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.verify_totp_code" title="Link to this definition"></a></dt>
+<dd><p>Vérifie si le code TOTP entré par l’utilisateur est correct
+dans la fenêtre de code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user_input_code</strong> (<em>str</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.OtpDialog">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">front_end.authentification.authentification.</span></span><span class="sig-name descname"><span class="pre">OtpDialog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">secret_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#OtpDialog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.OtpDialog" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QDialog</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.OtpDialog.setup_ui">
+<span class="sig-name descname"><span class="pre">setup_ui</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#OtpDialog.setup_ui"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.OtpDialog.setup_ui" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.OtpDialog.get_code">
+<span class="sig-name descname"><span class="pre">get_code</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#OtpDialog.get_code"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.OtpDialog.get_code" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.Ui_MainWindow">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">front_end.authentification.authentification.</span></span><span class="sig-name descname"><span class="pre">Ui_MainWindow</span></span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#Ui_MainWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.Ui_MainWindow" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Classe gérant l’interface utilisateur de la fenêtre d’authentification.
+Permet la connexion via email/mot de passe ou Google,
+ainsi que l’inscription de nouveaux utilisateurs.</p>
+<p>Exemple:
+&gt;&gt;&gt; app = QtWidgets.QApplication(sys.argv)
+&gt;&gt;&gt; MainWindow = QtWidgets.QMainWindow()
+&gt;&gt;&gt; ui = Ui_MainWindow()
+&gt;&gt;&gt; ui.setupUi(MainWindow)
+&gt;&gt;&gt; MainWindow.show()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.Ui_MainWindow.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#Ui_MainWindow.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.Ui_MainWindow.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialise une nouvelle instance de Ui_MainWindow.
+Configure l’attribut totp à None pour une potentielle utilisation ultérieure.</p>
+<p>Exemple:
+&gt;&gt;&gt; ui = Ui_MainWindow()
+&gt;&gt;&gt; print(ui.totp)  # None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.Ui_MainWindow.setupUi">
+<span class="sig-name descname"><span class="pre">setupUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">MainWindow</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#Ui_MainWindow.setupUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.Ui_MainWindow.setupUi" title="Link to this definition"></a></dt>
+<dd><p>Configure l’interface utilisateur complète de la fenêtre d’authentification.
+Crée et positionne tous les widgets nécessaires.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>MainWindow</strong> – Instance de QMainWindow à configurer</p>
+</dd>
+</dl>
+<p>Le setup inclut:
+- Configuration de la fenêtre principal*
+- Chargement du fichier de style QSS
+- Création des champs de saisie (nom d’utilisateur, email, mot de passe)
+- Mise en place des boutons (connexion Google, validation)
+- Configuration des messages d’erreur
+- Mise en place du lien de création de compte</p>
+<p>Exemple:
+&gt;&gt;&gt; window = QtWidgets.QMainWindow()
+&gt;&gt;&gt; ui = Ui_MainWindow()
+&gt;&gt;&gt; ui.setupUi(window)
+&gt;&gt;&gt; window.show()</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.Ui_MainWindow.show_signup_form">
+<span class="sig-name descname"><span class="pre">show_signup_form</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#Ui_MainWindow.show_signup_form"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.Ui_MainWindow.show_signup_form" title="Link to this definition"></a></dt>
+<dd><p>Bascule entre le formulaire de connexion et le formulaire d’inscription.
+Met à jour l’interface en conséquence via update_form_state().</p>
+<p>Exemple:
+&gt;&gt;&gt; ui = Ui_MainWindow()
+&gt;&gt;&gt; ui.setupUi(window)
+&gt;&gt;&gt; ui.show_signup_form()  # Bascule vers le formulaire d’inscription
+&gt;&gt;&gt; print(ui.is_login_form)  # False</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.Ui_MainWindow.update_form_state">
+<span class="sig-name descname"><span class="pre">update_form_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#Ui_MainWindow.update_form_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.Ui_MainWindow.update_form_state" title="Link to this definition"></a></dt>
+<dd><p>Met à jour l’état de l’interface selon le mode actif (connexion ou inscription).
+Gère la visibilité des champs, les textes affichés et les connexions des signaux.</p>
+<p>Cette méthode:
+- Déconnecte les anciens signaux
+- Met à jour les textes et placeholders
+- Configure la visibilité des widgets
+- Reconnecte les nouveaux signaux appropriés</p>
+<p>Exemple:
+&gt;&gt;&gt; ui = Ui_MainWindow()
+&gt;&gt;&gt; ui.setupUi(window)
+&gt;&gt;&gt; ui.is_login_form = False
+&gt;&gt;&gt; ui.update_form_state()  # L’interface passe en mode inscription</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.Ui_MainWindow.handle_login">
+<span class="sig-name descname"><span class="pre">handle_login</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#Ui_MainWindow.handle_login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.Ui_MainWindow.handle_login" title="Link to this definition"></a></dt>
+<dd><p>Gère le processus de connexion utilisateur.
+Vérifie les identifiants via Argon2 puis met en place l’authentification TOTP.</p>
+<p>Le processus comprend:
+1. Validation des identifiants utilisateur
+2. Récupération/création de la clé secrète TOTP
+3. Envoi du code TOTP par email
+4. Vérification du code saisi
+5. Ouverture de la fenêtre principale si authentification réussie</p>
+<p>Exemple:
+&gt;&gt;&gt; ui = Ui_MainWindow()
+&gt;&gt;&gt; ui.setupUi(window)
+&gt;&gt;&gt; ui.inputMail.setText(”<a class="reference external" href="mailto:user&#37;&#52;&#48;example&#46;com">user<span>&#64;</span>example<span>&#46;</span>com</a>”)
+&gt;&gt;&gt; ui.inputPassword.setText(“password123”)
+&gt;&gt;&gt; ui.handle_login()  # Lance le processus de connexion</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.Ui_MainWindow.login_with_google">
+<span class="sig-name descname"><span class="pre">login_with_google</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#Ui_MainWindow.login_with_google"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.Ui_MainWindow.login_with_google" title="Link to this definition"></a></dt>
+<dd><p>Initie le processus de connexion via Google.
+Ouvre le navigateur sur la page d’authentification Google.</p>
+<p>Exemple:
+&gt;&gt;&gt; ui = Ui_MainWindow()
+&gt;&gt;&gt; ui.setupUi(window)
+&gt;&gt;&gt; ui.google_login_button.click()  # ou ui.login_with_google()
+&gt;&gt;&gt; # Ouvre le navigateur sur la page de connexion Google</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.Ui_MainWindow.connect_google_user">
+<span class="sig-name descname"><span class="pre">connect_google_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#Ui_MainWindow.connect_google_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.Ui_MainWindow.connect_google_user" title="Link to this definition"></a></dt>
+<dd><p>Finalise la connexion d’un utilisateur via Google.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user_data</strong> (<em>dict</em>) – Dictionnaire contenant les informations de l’utilisateur Google</p>
+</dd>
+</dl>
+<p>Exemple:
+&gt;&gt;&gt; ui = Ui_MainWindow()
+&gt;&gt;&gt; ui.setupUi(window)
+&gt;&gt;&gt; user_data = {
+&gt;&gt;&gt;     “name”: “John Doe”,
+&gt;&gt;&gt;     “email”: “<a class="reference external" href="mailto:john&#46;doe&#37;&#52;&#48;gmail&#46;com">john<span>&#46;</span>doe<span>&#64;</span>gmail<span>&#46;</span>com</a>”
+&gt;&gt;&gt; }
+&gt;&gt;&gt; ui.connect_google_user(user_data)
+&gt;&gt;&gt; # L’utilisateur est connecté et la fenêtre principale s’ouvre</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.Ui_MainWindow.open_main_window_google">
+<span class="sig-name descname"><span class="pre">open_main_window_google</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#Ui_MainWindow.open_main_window_google"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.Ui_MainWindow.open_main_window_google" title="Link to this definition"></a></dt>
+<dd><p>Ouvre la fenêtre principale après une connexion réussie via Google.
+Configure l’utilisateur actif avec l’email Google.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>email</strong> (<em>str</em>) – Email de l’utilisateur Google</p>
+</dd>
+</dl>
+<p>Exemple:
+&gt;&gt;&gt; ui = Ui_MainWindow()
+&gt;&gt;&gt; ui.setupUi(window)
+&gt;&gt;&gt; ui.open_main_window_google(”<a class="reference external" href="mailto:user&#37;&#52;&#48;gmail&#46;com">user<span>&#64;</span>gmail<span>&#46;</span>com</a>”)
+&gt;&gt;&gt; # La fenêtre principale s’ouvre avec l’utilisateur configuré</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.Ui_MainWindow.handle_signup">
+<span class="sig-name descname"><span class="pre">handle_signup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#Ui_MainWindow.handle_signup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.Ui_MainWindow.handle_signup" title="Link to this definition"></a></dt>
+<dd><p>Gère le processus d’inscription d’un nouvel utilisateur.</p>
+<p>Effectue les validations suivantes:
+- Vérifie que l’email n’est pas une adresse Gmail
+- Valide le format de l’email
+- Vérifie la force du mot de passe via zxcvbn
+- Contrôle l’unicité de l’email et du nom d’utilisateur</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True si l’inscription est réussie, False sinon</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+<p>Exemple:
+&gt;&gt;&gt; ui = Ui_MainWindow()
+&gt;&gt;&gt; ui.setupUi(window)
+&gt;&gt;&gt; ui.show_signup_form()  # Passage en mode inscription
+&gt;&gt;&gt; ui.inputUser.setText(“john_doe”)
+&gt;&gt;&gt; ui.inputMail.setText(”<a class="reference external" href="mailto:john&#37;&#52;&#48;example&#46;com">john<span>&#64;</span>example<span>&#46;</span>com</a>”)
+&gt;&gt;&gt; ui.inputPassword.setText(”<a class="reference external" href="mailto:StrongP&#37;&#52;&#48;ssw0rd">StrongP<span>&#64;</span>ssw0rd</a>”)
+&gt;&gt;&gt; success = ui.handle_signup()
+&gt;&gt;&gt; if success:
+&gt;&gt;&gt;     print(“Inscription réussie!”)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.Ui_MainWindow.validate_email">
+<span class="sig-name descname"><span class="pre">validate_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#Ui_MainWindow.validate_email"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.Ui_MainWindow.validate_email" title="Link to this definition"></a></dt>
+<dd><p>Valide le format d’une adresse email.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>email</strong> (<em>str</em>) – Adresse email à valider</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True si le format est valide, False sinon</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<p>Exemple:
+&gt;&gt;&gt; ui = Ui_MainWindow()
+&gt;&gt;&gt; print(ui.validate_email(”<a class="reference external" href="mailto:user&#37;&#52;&#48;example&#46;com">user<span>&#64;</span>example<span>&#46;</span>com</a>”))  # True
+&gt;&gt;&gt; print(ui.validate_email(“invalid.email”))  # False</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.Ui_MainWindow.get_or_create_user_secret">
+<span class="sig-name descname"><span class="pre">get_or_create_user_secret</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#Ui_MainWindow.get_or_create_user_secret"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.Ui_MainWindow.get_or_create_user_secret" title="Link to this definition"></a></dt>
+<dd><p>Récupère la clé secrète TOTP d’un utilisateur ou en crée une nouvelle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>email</strong> (<em>str</em>) – Email de l’utilisateur</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Clé secrète TOTP</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p>Exemple:
+&gt;&gt;&gt; ui = Ui_MainWindow()
+&gt;&gt;&gt; secret = ui.get_or_create_user_secret(”<a class="reference external" href="mailto:user&#37;&#52;&#48;example&#46;com">user<span>&#64;</span>example<span>&#46;</span>com</a>”)
+&gt;&gt;&gt; print(len(secret))  # 32 (longueur typique d’une clé TOTP)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.Ui_MainWindow.show_error_message">
+<span class="sig-name descname"><span class="pre">show_error_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#Ui_MainWindow.show_error_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.Ui_MainWindow.show_error_message" title="Link to this definition"></a></dt>
+<dd><p>Affiche un message d’erreur temporaire dans l’interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> (<em>str</em>) – Message d’erreur à afficher</p>
+</dd>
+</dl>
+<p>Exemple:
+&gt;&gt;&gt; ui = Ui_MainWindow()
+&gt;&gt;&gt; ui.setupUi(window)
+&gt;&gt;&gt; ui.show_error_message(“Email invalide!”)
+&gt;&gt;&gt; # Le message s’affiche en rouge et disparaît après 3 secondes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.Ui_MainWindow.clear_error_message">
+<span class="sig-name descname"><span class="pre">clear_error_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#Ui_MainWindow.clear_error_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.Ui_MainWindow.clear_error_message" title="Link to this definition"></a></dt>
+<dd><p>Efface le message d’erreur actuellement affiché dans l’interface.</p>
+<p>Exemple:
+&gt;&gt;&gt; ui = Ui_MainWindow()
+&gt;&gt;&gt; ui.setupUi(window)
+&gt;&gt;&gt; ui.show_error_message(“Une erreur”)
+&gt;&gt;&gt; ui.clear_error_message()  # Le message disparaît</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.Ui_MainWindow.show_success_message">
+<span class="sig-name descname"><span class="pre">show_success_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#Ui_MainWindow.show_success_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.Ui_MainWindow.show_success_message" title="Link to this definition"></a></dt>
+<dd><p>Affiche un message de succès temporaire dans l’interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> (<em>str</em>) – Message de succès à afficher</p>
+</dd>
+</dl>
+<p>Exemple:
+&gt;&gt;&gt; ui = Ui_MainWindow()
+&gt;&gt;&gt; ui.setupUi(window)
+&gt;&gt;&gt; ui.show_success_message(“Connexion réussie!”)
+&gt;&gt;&gt; # Le message s’affiche en blanc et disparaît après 3 secondes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.Ui_MainWindow.open_main_window">
+<span class="sig-name descname"><span class="pre">open_main_window</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#Ui_MainWindow.open_main_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.Ui_MainWindow.open_main_window" title="Link to this definition"></a></dt>
+<dd><p>Ferme la fenêtre d’authentification et ouvre la fenêtre principale
+après une connexion réussie via email/mot de passe.
+Configure l’utilisateur actif avec l’email utilisé pour la connexion.</p>
+<p>Exemple:
+&gt;&gt;&gt; ui = Ui_MainWindow()
+&gt;&gt;&gt; ui.setupUi(window)
+&gt;&gt;&gt; ui.inputMail.setText(”<a class="reference external" href="mailto:user&#37;&#52;&#48;example&#46;com">user<span>&#64;</span>example<span>&#46;</span>com</a>”)
+&gt;&gt;&gt; ui.open_main_window()
+&gt;&gt;&gt; # La fenêtre principale s’ouvre avec l’utilisateur configuré</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.Ui_MainWindow.retranslateUi">
+<span class="sig-name descname"><span class="pre">retranslateUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">MainWindow</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#Ui_MainWindow.retranslateUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.Ui_MainWindow.retranslateUi" title="Link to this definition"></a></dt>
+<dd><p>Configure les textes de l’interface utilisateur.
+Utilise QCoreApplication.translate pour la gestion des traductions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>MainWindow</strong> – Instance de QMainWindow dont les textes doivent être traduits</p>
+</dd>
+</dl>
+<p>Cette méthode définit:
+- Le titre de la fenêtre
+- Les labels des champs de saisie
+- Le texte des boutons
+- Les autres éléments textuels de l’interface</p>
+<p>Exemple:
+&gt;&gt;&gt; ui = Ui_MainWindow()
+&gt;&gt;&gt; window = QtWidgets.QMainWindow()
+&gt;&gt;&gt; ui.setupUi(window)
+&gt;&gt;&gt; ui.retranslateUi(window)
+&gt;&gt;&gt; print(window.windowTitle())  # “TaskFlow - Login”</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.MainWindow">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">front_end.authentification.authentification.</span></span><span class="sig-name descname"><span class="pre">MainWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#MainWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.MainWindow" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QMainWindow</span></code>, <a class="reference internal" href="#front_end.authentification.authentification.Ui_MainWindow" title="front_end.authentification.authentification.Ui_MainWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ui_MainWindow</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.MainWindow.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#MainWindow.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.MainWindow.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialise la classe Ui_MainWindow.</p>
+<p>Cette méthode initialise les valeurs de l’utilisateur actuel et de l’ID utilisateur.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.authentification.MainWindow.closeEvent">
+<span class="sig-name descname"><span class="pre">closeEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QCloseEvent</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/authentification.html#MainWindow.closeEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.authentification.MainWindow.closeEvent" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function" id="module-front_end.authentification.main">
+<dt class="sig sig-object py" id="front_end.authentification.main.load_sf_font">
+<span class="sig-prename descclassname"><span class="pre">front_end.authentification.main.</span></span><span class="sig-name descname"><span class="pre">load_sf_font</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/main.html#load_sf_font"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.main.load_sf_font" title="Link to this definition"></a></dt>
+<dd><p>Charge la police SF Pro et applique-la comme police par défaut de l’application.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="front_end.authentification.main.load_stylesheet">
+<span class="sig-prename descclassname"><span class="pre">front_end.authentification.main.</span></span><span class="sig-name descname"><span class="pre">load_stylesheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/main.html#load_stylesheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.main.load_stylesheet" title="Link to this definition"></a></dt>
+<dd><p>Charge le fichier de style QSS et applique-le à l’application.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="front_end.authentification.main.run_flask">
+<span class="sig-prename descclassname"><span class="pre">front_end.authentification.main.</span></span><span class="sig-name descname"><span class="pre">run_flask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/main.html#run_flask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.main.run_flask" title="Link to this definition"></a></dt>
+<dd><p>Démarre le serveur Flask dans un thread séparé.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="front_end.authentification.main.main">
+<span class="sig-prename descclassname"><span class="pre">front_end.authentification.main.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/main.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.main.main" title="Link to this definition"></a></dt>
+<dd><p>Point d’entrée principal de l’application.</p>
+</dd></dl>
+
+<dl class="py class" id="module-front_end.authentification.pagePrincipale">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.InviteUsersDialog">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">front_end.authentification.pagePrincipale.</span></span><span class="sig-name descname"><span class="pre">InviteUsersDialog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deny</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#InviteUsersDialog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.InviteUsersDialog" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QDialog</span></code></p>
+<p>Cette classe gère le dialogue d’invitation des utilisateurs dans un projet.</p>
+<p>Cette classe renvoie une boîte de dialogue permettant de sélectionner des
+utilisateurs et de leur attribuer des droits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> – Widget parent (optionnel)</p></li>
+<li><p><strong>deny</strong> – Bool indiquant si l’accès doit être refusé</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Boîte de dialogue d’invitation</p>
+</dd>
+<dt class="field-odd">Raise<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Exception si l’initialisation échoue</p>
+</dd>
+</dl>
+<p>Exemple:
+&gt;&gt;&gt; dialog = InviteUsersDialog(parent=None)
+&gt;&gt;&gt; if dialog.exec_():
+&gt;&gt;&gt;     users = dialog.get_selected_users()</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.InviteUsersDialog.setup_ui">
+<span class="sig-name descname"><span class="pre">setup_ui</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#InviteUsersDialog.setup_ui"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.InviteUsersDialog.setup_ui" title="Link to this definition"></a></dt>
+<dd><p>Configure l’interface utilisateur du dialogue d’invitation.</p>
+<p>Cette fonction initialise tous les éléments de l’interface du dialogue
+d’invitation des utilisateurs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>self</strong> – Instance de la classe</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raise<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Exception si l’initialisation des composants échoue</p>
+</dd>
+</dl>
+<p>Exemple:
+&gt;&gt;&gt; dialog = InviteUsersDialog()
+&gt;&gt;&gt; dialog.setup_ui()</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.InviteUsersDialog.load_users">
+<span class="sig-name descname"><span class="pre">load_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">users</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#InviteUsersDialog.load_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.InviteUsersDialog.load_users" title="Link to this definition"></a></dt>
+<dd><p>Charge la liste des utilisateurs disponibles dans le dialogue.</p>
+<p>Cette fonction met à jour la liste des utilisateurs pouvant être invités
+dans le projet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>users</strong> – Liste des utilisateurs à afficher</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raise<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Exception si le chargement échoue</p>
+</dd>
+</dl>
+<p>Exemple:
+&gt;&gt;&gt; dialog = InviteUsersDialog()
+&gt;&gt;&gt; dialog.load_users([<a class="reference external" href="mailto:'user1&#37;&#52;&#48;email&#46;com">‘user1<span>&#64;</span>email<span>&#46;</span>com</a>’, <a class="reference external" href="mailto:'user2&#37;&#52;&#48;email&#46;com">‘user2<span>&#64;</span>email<span>&#46;</span>com</a>’])</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.InviteUsersDialog.get_selected_users">
+<span class="sig-name descname"><span class="pre">get_selected_users</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#InviteUsersDialog.get_selected_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.InviteUsersDialog.get_selected_users" title="Link to this definition"></a></dt>
+<dd><p>Récupère la liste des utilisateurs sélectionnés avec leurs droits.</p>
+<p>Cette fonction renvoie un tuple contenant les utilisateurs sélectionnés
+et les droits qui leur ont été attribués.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Liste de tuples (user, permission)</p>
+</dd>
+<dt class="field-even">Raise<span class="colon">:</span></dt>
+<dd class="field-even"><p>Exception si la récupération échoue</p>
+</dd>
+</dl>
+<p>Exemple:
+&gt;&gt;&gt; dialog = InviteUsersDialog()
+&gt;&gt;&gt; selected = dialog.get_selected_users()
+&gt;&gt;&gt; if selected:
+&gt;&gt;&gt;     print(f”Users selected: {selected}”)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">front_end.authentification.pagePrincipale.</span></span><span class="sig-name descname"><span class="pre">Ui_MainWindow</span></span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.setupUi">
+<span class="sig-name descname"><span class="pre">setupUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">MainWindow</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.setupUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.setupUi" title="Link to this definition"></a></dt>
+<dd><p>Configure l’interface utilisateur de la fenêtre principale.</p>
+<p>Cette méthode configure la fenêtre principale, y compris sa taille, son icône,
+le widget central, la mise en page, les onglets et
+les connexions pour divers boutons et widgets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>MainWindow</strong> – L’objet de la fenêtre principale à configurer.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.set_current_user">
+<span class="sig-name descname"><span class="pre">set_current_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.set_current_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.set_current_user" title="Link to this definition"></a></dt>
+<dd><p>Définit l’utilisateur actuel en fonction de l’email
+fourni et met à jour l’interface utilisateur en conséquence.</p>
+<p>Cette méthode met à jour les informations de l’utilisateur
+actuel, telles que l’email, le nom d’utilisateur et le rôle,
+et charge les projets associés à cet utilisateur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>email</strong> – L’email de l’utilisateur actuel.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.deconnexion">
+<span class="sig-name descname"><span class="pre">deconnexion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.deconnexion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.deconnexion" title="Link to this definition"></a></dt>
+<dd><p>Déconnecte l’utilisateur actuel et retourne à la fenêtre d’authentification.</p>
+<p>Cette méthode ferme toutes les fenêtres ouvertes,
+met à jour le statut de l’utilisateur dans la base de données
+et affiche la fenêtre d’authentification.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.delete_account">
+<span class="sig-name descname"><span class="pre">delete_account</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.delete_account"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.delete_account" title="Link to this definition"></a></dt>
+<dd><p>Supprime le compte de l’utilisateur actuel après confirmation.</p>
+<p>Cette méthode demande une confirmation à l’utilisateur
+avant de supprimer son compte de la base de données.
+Si la suppression est réussie, l’utilisateur est déconnecté
+et la fenêtre d’authentification est affichée.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.add_project">
+<span class="sig-name descname"><span class="pre">add_project</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.add_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.add_project" title="Link to this definition"></a></dt>
+<dd><p>Ajoute un nouveau projet après avoir obtenu le nom du projet de l’utilisateur.</p>
+<p>Cette méthode affiche une boîte de dialogue pour
+que l’utilisateur entre le nom du projet.
+Si le projet n’existe pas déjà, il est ajouté à
+la base de données et l’utilisateur est ajouté au projet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.load_projects">
+<span class="sig-name descname"><span class="pre">load_projects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.load_projects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.load_projects" title="Link to this definition"></a></dt>
+<dd><p>Charge les projets associés à l’utilisateur actuel et met à jour l’interface utilisateur.</p>
+<p>Cette méthode récupère les projets actifs et en
+attente de l’utilisateur depuis la base de données
+et les affiche dans les listes correspondantes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.project_clicked">
+<span class="sig-name descname"><span class="pre">project_clicked</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.project_clicked"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.project_clicked" title="Link to this definition"></a></dt>
+<dd><p>Gère l’événement lorsqu’un projet est cliqué dans la liste des projets.</p>
+<p>Cette méthode met à jour l’interface utilisateur
+pour afficher les tâches et les utilisateurs
+associés au projet sélectionné.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.display_users_in_project">
+<span class="sig-name descname"><span class="pre">display_users_in_project</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.display_users_in_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.display_users_in_project" title="Link to this definition"></a></dt>
+<dd><p>Affiche les utilisateurs du projet actuel et leur statut en
+ligne dans une nouvelle section de l’interface.</p>
+<p>Cette méthode crée une section dans l’onglet des tâches pour
+afficher les utilisateurs du projet actuel,
+ainsi que leur statut en ligne. Elle met également en place
+un minuteur pour mettre à jour périodiquement
+le statut des utilisateurs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.update_users_status">
+<span class="sig-name descname"><span class="pre">update_users_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.update_users_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.update_users_status" title="Link to this definition"></a></dt>
+<dd><p>Met à jour le statut des utilisateurs périodiquement.</p>
+<p>Cette méthode est appelée périodiquement pour mettre à
+jour le statut en ligne des utilisateurs
+du projet actuel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.load_users_for_project">
+<span class="sig-name descname"><span class="pre">load_users_for_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.load_users_for_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.load_users_for_project" title="Link to this definition"></a></dt>
+<dd><p>Charge les utilisateurs associés au projet spécifié.</p>
+<p>Cette méthode récupère les utilisateurs assignés au projet et les affiche dans les listes
+de l’interface utilisateur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_name</strong> – Le nom du projet pour lequel charger les utilisateurs.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.add_selected_user">
+<span class="sig-name descname"><span class="pre">add_selected_user</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.add_selected_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.add_selected_user" title="Link to this definition"></a></dt>
+<dd><p>Ajoute l’utilisateur sélectionné à la liste des
+utilisateurs assignés.</p>
+<p>Cette méthode ajoute l’utilisateur sélectionné dans
+le menu déroulant à la liste des utilisateurs
+assignés à la tâche ou au projet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.remove_selected_user_from_list">
+<span class="sig-name descname"><span class="pre">remove_selected_user_from_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.remove_selected_user_from_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.remove_selected_user_from_list" title="Link to this definition"></a></dt>
+<dd><p>Supprime l’utilisateur sélectionné de la liste des utilisateurs assignés.</p>
+<p>Cette méthode supprime l’utilisateur sélectionné dans la liste des utilisateurs assignés
+à la tâche ou au projet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.is_user_already_assigned">
+<span class="sig-name descname"><span class="pre">is_user_already_assigned</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.is_user_already_assigned"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.is_user_already_assigned" title="Link to this definition"></a></dt>
+<dd><p>Vérifie si un utilisateur est déjà assigné.</p>
+<p>Cette méthode vérifie si l’utilisateur spécifié est
+déjà présent dans la liste des utilisateurs
+assignés à la tâche ou au projet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>username</strong> (<em>str</em>) – Le nom d’utilisateur à vérifier.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True si l’utilisateur est déjà assigné, False sinon.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.add_task">
+<span class="sig-name descname"><span class="pre">add_task</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.add_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.add_task" title="Link to this definition"></a></dt>
+<dd><p>Ajoute une nouvelle tâche au projet actuel.</p>
+<p>Cette méthode affiche une boîte de dialogue pour que
+l’utilisateur entre les détails de la tâche.
+Si la tâche est validée, elle est ajoutée à la base
+de données et à l’interface utilisateur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.load_tasks_for_project">
+<span class="sig-name descname"><span class="pre">load_tasks_for_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.load_tasks_for_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.load_tasks_for_project" title="Link to this definition"></a></dt>
+<dd><p>Charge les tâches associées au projet spécifié.</p>
+<p>Cette méthode récupère les tâches du projet depuis la base de données et les affiche
+dans l’interface utilisateur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_name</strong> – Le nom du projet pour lequel charger les tâches.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.set_task_background">
+<span class="sig-name descname"><span class="pre">set_task_background</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_completed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.set_task_background"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.set_task_background" title="Link to this definition"></a></dt>
+<dd><p>Applique un fond coloré à un item.</p>
+<p>Cette méthode applique une couleur de fond à un item de la liste des tâches
+en fonction de son statut.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item</strong> – L’item à colorer.</p></li>
+<li><p><strong>color</strong> – La couleur à appliquer.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.refresh_task_status">
+<span class="sig-name descname"><span class="pre">refresh_task_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.refresh_task_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.refresh_task_status" title="Link to this definition"></a></dt>
+<dd><p>Rafraîchit périodiquement le statut des tâches et met à jour la couleur.</p>
+<p>Cette méthode est appelée périodiquement pour mettre à jour le statut des tâches
+et leur couleur de fond en fonction de leur statut.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_id</strong> – L’ID du projet pour lequel rafraîchir les tâches.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.add_subtask">
+<span class="sig-name descname"><span class="pre">add_subtask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.add_subtask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.add_subtask" title="Link to this definition"></a></dt>
+<dd><p>Ajoute une sous-tâche à la tâche sélectionnée.</p>
+<p>Cette méthode affiche une boîte de dialogue pour que
+l’utilisateur entre les détails de la sous-tâche.
+Si la sous-tâche est validée, elle est ajoutée à la
+base de données et à l’interface utilisateur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.delete_task">
+<span class="sig-name descname"><span class="pre">delete_task</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.delete_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.delete_task" title="Link to this definition"></a></dt>
+<dd><p>Supprime la tâche sélectionnée.</p>
+<p>Cette méthode demande une confirmation à l’utilisateur avant de supprimer la tâche
+sélectionnée de la base de données et de l’interface utilisateur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.delete_project">
+<span class="sig-name descname"><span class="pre">delete_project</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.delete_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.delete_project" title="Link to this definition"></a></dt>
+<dd><p>Supprime le projet sélectionné.</p>
+<p>Cette méthode demande une confirmation à l’utilisateur avant de supprimer le projet
+sélectionné de la base de données et de l’interface utilisateur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.modify_task">
+<span class="sig-name descname"><span class="pre">modify_task</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.modify_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.modify_task" title="Link to this definition"></a></dt>
+<dd><p>Modifie la tâche sélectionnée.</p>
+<p>Cette méthode affiche une boîte de dialogue pour que
+l’utilisateur modifie les détails de la tâche.
+Si la modification est validée, elle est mise à jour
+dans la base de données et dans l’interface utilisateur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.mark_completed">
+<span class="sig-name descname"><span class="pre">mark_completed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.mark_completed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.mark_completed" title="Link to this definition"></a></dt>
+<dd><p>Marque la tâche sélectionnée comme terminée.</p>
+<p>Cette méthode met à jour le statut de la tâche sélectionnée dans la base de données
+et dans l’interface utilisateur pour indiquer qu’elle est terminée.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.mark_uncompleted">
+<span class="sig-name descname"><span class="pre">mark_uncompleted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.mark_uncompleted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.mark_uncompleted" title="Link to this definition"></a></dt>
+<dd><p>Marque la tâche sélectionnée comme non terminée.</p>
+<p>Cette méthode met à jour le statut de la tâche sélectionnée dans la base de données
+et dans l’interface utilisateur pour indiquer qu’elle n’est pas terminée.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.update_subtask_availability">
+<span class="sig-name descname"><span class="pre">update_subtask_availability</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.update_subtask_availability"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.update_subtask_availability" title="Link to this definition"></a></dt>
+<dd><p>Met à jour la disponibilité des boutons de sous-tâche en fonction de la sélection actuelle.</p>
+<p>Cette méthode active ou désactive les boutons de sous-tâche en fonction de la sélection
+actuelle dans la liste des tâches.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.retranslateUi">
+<span class="sig-name descname"><span class="pre">retranslateUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">MainWindow</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.retranslateUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.retranslateUi" title="Link to this definition"></a></dt>
+<dd><p>Retraduit l’interface utilisateur.</p>
+<p>Cette méthode met à jour les textes de l’interface utilisateur en fonction de la langue
+sélectionnée.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>MainWindow</strong> – L’objet de la fenêtre principale à retraduire.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.accept_project">
+<span class="sig-name descname"><span class="pre">accept_project</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.accept_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.accept_project" title="Link to this definition"></a></dt>
+<dd><p>Accepte le projet sélectionné dans la liste des projets en attente.</p>
+<p>Cette méthode met à jour le statut du projet sélectionné pour indiquer que l’utilisateur
+a accepté l’invitation à rejoindre le projet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.refuse_project">
+<span class="sig-name descname"><span class="pre">refuse_project</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.refuse_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.refuse_project" title="Link to this definition"></a></dt>
+<dd><p>Refuse le projet sélectionné dans la liste des projets en attente.</p>
+<p>Cette méthode met à jour le statut du projet sélectionné pour indiquer que l’utilisateur
+a refusé l’invitation à rejoindre le projet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.delete_user">
+<span class="sig-name descname"><span class="pre">delete_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.delete_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.delete_user" title="Link to this definition"></a></dt>
+<dd><p>Supprime un utilisateur de la base de données en utilisant son username ou son user_id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> (<em>str</em>) – Le nom d’utilisateur (utilisé si user_id n’est pas fourni).</p></li>
+<li><p><strong>user_id</strong> (<em>int</em><em> | </em><em>None</em>) – L’ID de l’utilisateur (prioritaire sur username si fourni).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True si la suppression a réussi, False sinon.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.send_invitation">
+<span class="sig-name descname"><span class="pre">send_invitation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permission</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.send_invitation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.send_invitation" title="Link to this definition"></a></dt>
+<dd><p>Inviter un user dans son projet</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<em>int</em>)</p></li>
+<li><p><strong>user_id</strong> (<em>int</em>)</p></li>
+<li><p><strong>permission</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.get_invitation">
+<span class="sig-name descname"><span class="pre">get_invitation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_pending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.get_invitation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.get_invitation" title="Link to this definition"></a></dt>
+<dd><p>Cette fonction récupere les projets où l’utilisateur est invité</p>
+<p>Si only_pending = True, cela récupere seulement les invitations en attente,
+où il faut que l’utilisateur réponde, sinon la fonction revoie tous les
+projets dont l’utilisateur a accepté l’invitation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_id</strong> (<em>int</em>) – ID de l’utilisateur</p></li>
+<li><p><strong>only_pending</strong> – Récupère seulement les projets en attente</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.set_invite">
+<span class="sig-name descname"><span class="pre">set_invite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joined</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.set_invite"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.set_invite" title="Link to this definition"></a></dt>
+<dd><p>Met à jour le statut d’une invitation de projet.</p>
+<p>Cette méthode met à jour le statut de l’invitation pour
+l’utilisateur spécifié dans la base de données.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_id</strong> (<em>int</em>) – L’ID du projet.</p></li>
+<li><p><strong>user_id</strong> (<em>int</em>) – L’ID de l’utilisateur.</p></li>
+<li><p><strong>joined</strong> (<em>bool</em>) – Booléen indiquant si l’invitation est acceptée (True) ou refusée (False).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.get_user_to_invite">
+<span class="sig-name descname"><span class="pre">get_user_to_invite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_list_users</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_list_users_in_projects</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.get_user_to_invite"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.get_user_to_invite" title="Link to this definition"></a></dt>
+<dd><p>Affiche le dialogue d’invitation des utilisateurs.</p>
+<p>Cette méthode affiche une boîte de dialogue permettant d’inviter des utilisateurs
+au projet actuel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>_list_users</strong> (<em>list</em>)</p></li>
+<li><p><strong>_list_users_in_projects</strong> (<em>list</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.Ui_MainWindow.show_invite_dialog">
+<span class="sig-name descname"><span class="pre">show_invite_dialog</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#Ui_MainWindow.show_invite_dialog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.Ui_MainWindow.show_invite_dialog" title="Link to this definition"></a></dt>
+<dd><p>Affiche le dialogue d’invitation des utilisateurs.</p>
+<p>Cette méthode affiche une boîte de dialogue permettant d’inviter des utilisateurs
+au projet actuel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.MainWindow">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">front_end.authentification.pagePrincipale.</span></span><span class="sig-name descname"><span class="pre">MainWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#MainWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.MainWindow" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QMainWindow</span></code>, <a class="reference internal" href="#front_end.authentification.pagePrincipale.Ui_MainWindow" title="front_end.authentification.pagePrincipale.Ui_MainWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ui_MainWindow</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.MainWindow.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#MainWindow.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.MainWindow.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialise la classe Ui_MainWindow.</p>
+<p>Cette méthode initialise les valeurs de l’utilisateur actuel et de l’ID utilisateur.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.MainWindow.closeEvent">
+<span class="sig-name descname"><span class="pre">closeEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QCloseEvent</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#MainWindow.closeEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.MainWindow.closeEvent" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.UserRoleDialog">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">front_end.authentification.pagePrincipale.</span></span><span class="sig-name descname"><span class="pre">UserRoleDialog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_user_role</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#UserRoleDialog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.UserRoleDialog" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QDialog</span></code></p>
+<p>Boîte de dialogue pour modifier le rôle d’un utilisateur dans un projet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> – Le nom d’utilisateur.</p></li>
+<li><p><strong>user_id</strong> – L’ID de l’utilisateur.</p></li>
+<li><p><strong>project_id</strong> – L’ID du projet.</p></li>
+<li><p><strong>current_user_role</strong> – Le rôle actuel de l’utilisateur.</p></li>
+<li><p><strong>parent</strong> – Le parent de la boîte de dialogue (optionnel).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.UserRoleDialog.accept">
+<span class="sig-name descname"><span class="pre">accept</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#UserRoleDialog.accept"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.UserRoleDialog.accept" title="Link to this definition"></a></dt>
+<dd><p>Accepte les modifications et met à jour le rôle de l’utilisateur dans la base de données.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.UserStatusWidget">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">front_end.authentification.pagePrincipale.</span></span><span class="sig-name descname"><span class="pre">UserStatusWidget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_online</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_user_role</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#UserStatusWidget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.UserStatusWidget" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QWidget</span></code></p>
+<p>Widget pour afficher le statut d’un utilisateur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> – Le nom d’utilisateur.</p></li>
+<li><p><strong>user_id</strong> – L’ID de l’utilisateur (optionnel).</p></li>
+<li><p><strong>is_online</strong> – Booléen indiquant si l’utilisateur est en ligne.</p></li>
+<li><p><strong>parent</strong> – Le parent du widget (optionnel).</p></li>
+<li><p><strong>is_admin</strong> – Booléen indiquant si l’utilisateur est administrateur.</p></li>
+<li><p><strong>project_id</strong> – L’ID du projet (optionnel).</p></li>
+<li><p><strong>current_user_role</strong> – Le rôle actuel de l’utilisateur (optionnel).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.UserStatusWidget.mousePressEvent">
+<span class="sig-name descname"><span class="pre">mousePressEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#UserStatusWidget.mousePressEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.UserStatusWidget.mousePressEvent" title="Link to this definition"></a></dt>
+<dd><p>Gère l’événement de clic de la souris.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event</strong> – L’événement de clic de la souris.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.UserStatusWidget.on_user_clicked">
+<span class="sig-name descname"><span class="pre">on_user_clicked</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#UserStatusWidget.on_user_clicked"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.UserStatusWidget.on_user_clicked" title="Link to this definition"></a></dt>
+<dd><p>Affiche la boîte de dialogue pour modifier le rôle de l’utilisateur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.TaskDialog">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">front_end.authentification.pagePrincipale.</span></span><span class="sig-name descname"><span class="pre">TaskDialog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#TaskDialog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.TaskDialog" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QDialog</span></code></p>
+<p>Boîte de dialogue pour ajouter une nouvelle tâche.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> – Le parent de la boîte de dialogue (optionnel).</p></li>
+<li><p><strong>users</strong> – Liste des utilisateurs disponibles pour l’assignation.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.TaskDialog.setup_ui">
+<span class="sig-name descname"><span class="pre">setup_ui</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#TaskDialog.setup_ui"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.TaskDialog.setup_ui" title="Link to this definition"></a></dt>
+<dd><p>Configure l’interface utilisateur de la boîte de dialogue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.TaskDialog.load_users">
+<span class="sig-name descname"><span class="pre">load_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">users</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#TaskDialog.load_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.TaskDialog.load_users" title="Link to this definition"></a></dt>
+<dd><p>Charge la liste des utilisateurs dans le menu déroulant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>users</strong> – Liste des utilisateurs.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.TaskDialog.add_selected_user">
+<span class="sig-name descname"><span class="pre">add_selected_user</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#TaskDialog.add_selected_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.TaskDialog.add_selected_user" title="Link to this definition"></a></dt>
+<dd><p>Ajoute l’utilisateur sélectionné à la liste des utilisateurs assignés.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.TaskDialog.remove_selected_user">
+<span class="sig-name descname"><span class="pre">remove_selected_user</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#TaskDialog.remove_selected_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.TaskDialog.remove_selected_user" title="Link to this definition"></a></dt>
+<dd><p>Retire l’utilisateur sélectionné de la liste des utilisateurs assignés.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.TaskDialog.is_user_already_assigned">
+<span class="sig-name descname"><span class="pre">is_user_already_assigned</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#TaskDialog.is_user_already_assigned"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.TaskDialog.is_user_already_assigned" title="Link to this definition"></a></dt>
+<dd><p>Vérifie si l’utilisateur est déjà assigné.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>username</strong> – Le nom d’utilisateur.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Booléen indiquant si l’utilisateur est déjà assigné.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.TaskDialog.get_form_data">
+<span class="sig-name descname"><span class="pre">get_form_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#TaskDialog.get_form_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.TaskDialog.get_form_data" title="Link to this definition"></a></dt>
+<dd><p>Récupère les données du formulaire.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionnaire contenant les données du formulaire.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.SubtaskDialog">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">front_end.authentification.pagePrincipale.</span></span><span class="sig-name descname"><span class="pre">SubtaskDialog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#SubtaskDialog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.SubtaskDialog" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QDialog</span></code></p>
+<p>Boîte de dialogue pour ajouter une sous-tâche.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> – Le parent de la boîte de dialogue (optionnel).</p></li>
+<li><p><strong>users</strong> – Liste des utilisateurs disponibles pour l’assignation (optionnel).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.SubtaskDialog.setup_ui">
+<span class="sig-name descname"><span class="pre">setup_ui</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#SubtaskDialog.setup_ui"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.SubtaskDialog.setup_ui" title="Link to this definition"></a></dt>
+<dd><p>Configure l’interface utilisateur de la boîte de dialogue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.SubtaskDialog.load_users">
+<span class="sig-name descname"><span class="pre">load_users</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#SubtaskDialog.load_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.SubtaskDialog.load_users" title="Link to this definition"></a></dt>
+<dd><p>Charge la liste des utilisateurs dans le menu déroulant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.SubtaskDialog.add_selected_user">
+<span class="sig-name descname"><span class="pre">add_selected_user</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#SubtaskDialog.add_selected_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.SubtaskDialog.add_selected_user" title="Link to this definition"></a></dt>
+<dd><p>Ajoute l’utilisateur sélectionné à la liste des utilisateurs assignés.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.SubtaskDialog.remove_selected_user">
+<span class="sig-name descname"><span class="pre">remove_selected_user</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#SubtaskDialog.remove_selected_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.SubtaskDialog.remove_selected_user" title="Link to this definition"></a></dt>
+<dd><p>Retire l’utilisateur sélectionné de la liste des utilisateurs assignés.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.SubtaskDialog.is_user_already_assigned">
+<span class="sig-name descname"><span class="pre">is_user_already_assigned</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#SubtaskDialog.is_user_already_assigned"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.SubtaskDialog.is_user_already_assigned" title="Link to this definition"></a></dt>
+<dd><p>Vérifie si l’utilisateur est déjà assigné.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>username</strong> – Le nom d’utilisateur.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Booléen indiquant si l’utilisateur est déjà assigné.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.SubtaskDialog.get_form_data">
+<span class="sig-name descname"><span class="pre">get_form_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#SubtaskDialog.get_form_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.SubtaskDialog.get_form_data" title="Link to this definition"></a></dt>
+<dd><p>Récupère les données du formulaire.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionnaire contenant les données du formulaire.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.TaskEditDialog">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">front_end.authentification.pagePrincipale.</span></span><span class="sig-name descname"><span class="pre">TaskEditDialog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assigned_users</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_users</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#TaskEditDialog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.TaskEditDialog" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QDialog</span></code></p>
+<p>Boîte de dialogue pour modifier une tâche existante.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> – Le parent de la boîte de dialogue (optionnel).</p></li>
+<li><p><strong>task_info</strong> – Informations sur la tâche à modifier.</p></li>
+<li><p><strong>assigned_users</strong> – Liste des utilisateurs assignés à la tâche.</p></li>
+<li><p><strong>all_users</strong> – Liste de tous les utilisateurs disponibles pour l’assignation.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.TaskEditDialog.add_selected_user">
+<span class="sig-name descname"><span class="pre">add_selected_user</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#TaskEditDialog.add_selected_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.TaskEditDialog.add_selected_user" title="Link to this definition"></a></dt>
+<dd><p>Ajoute l’utilisateur sélectionné à la liste des utilisateurs assignés.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.TaskEditDialog.remove_selected_user">
+<span class="sig-name descname"><span class="pre">remove_selected_user</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#TaskEditDialog.remove_selected_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.TaskEditDialog.remove_selected_user" title="Link to this definition"></a></dt>
+<dd><p>Retire l’utilisateur sélectionné de la liste des utilisateurs assignés.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.TaskEditDialog.is_user_already_assigned">
+<span class="sig-name descname"><span class="pre">is_user_already_assigned</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#TaskEditDialog.is_user_already_assigned"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.TaskEditDialog.is_user_already_assigned" title="Link to this definition"></a></dt>
+<dd><p>Vérifie si l’utilisateur est déjà assigné.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>username</strong> – Le nom d’utilisateur.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Booléen indiquant si l’utilisateur est déjà assigné.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="front_end.authentification.pagePrincipale.TaskEditDialog.get_form_data">
+<span class="sig-name descname"><span class="pre">get_form_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/front_end/authentification/pagePrincipale.html#TaskEditDialog.get_form_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#front_end.authentification.pagePrincipale.TaskEditDialog.get_form_data" title="Link to this definition"></a></dt>
+<dd><p>Récupère les données du formulaire.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionnaire contenant les données du formulaire.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="backend.html" class="btn btn-neutral float-left" title="Backend Modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, TaskFlow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

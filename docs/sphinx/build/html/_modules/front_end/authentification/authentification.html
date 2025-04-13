@@ -1,0 +1,1006 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>front_end.authentification.authentification &mdash; SAE502-TaskFlow 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            SAE502-TaskFlow
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table des matières</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../backend.html">Backend Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../frontend.html">Frontend Modules</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">SAE502-TaskFlow</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">front_end.authentification.authentification</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for front_end.authentification.authentification</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">PyQt5</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
+<span class="kn">from</span> <span class="nn">backend.db_api</span> <span class="kn">import</span> <span class="n">DB_API</span>
+<span class="kn">from</span> <span class="nn">.pagePrincipale</span> <span class="kn">import</span> <span class="n">MainWindow</span> <span class="k">as</span> <span class="n">MainWindowUI</span>
+<span class="kn">import</span> <span class="nn">webbrowser</span>
+<span class="kn">import</span> <span class="nn">pyotp</span>
+<span class="kn">import</span> <span class="nn">smtplib</span>
+<span class="kn">from</span> <span class="nn">email.mime.text</span> <span class="kn">import</span> <span class="n">MIMEText</span>
+<span class="kn">from</span> <span class="nn">email.mime.multipart</span> <span class="kn">import</span> <span class="n">MIMEMultipart</span>
+<span class="kn">from</span> <span class="nn">zxcvbn</span> <span class="kn">import</span> <span class="n">zxcvbn</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+
+<span class="c1"># =====================</span>
+<span class="c1"># Config email pour TOTP</span>
+<span class="c1"># =====================</span>
+<span class="n">SMTP_SERVER</span> <span class="o">=</span> <span class="s2">&quot;smtp.gmail.com&quot;</span>
+<span class="n">SMTP_PORT</span> <span class="o">=</span> <span class="mi">587</span>
+
+<span class="n">accounts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;taskflowreminder1@gmail.com&quot;</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;bgnt irxw fblu vemb&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;taskflowreminder2@gmail.com&quot;</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;lkya wtsu opzy pnse&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;taskflowreminder3@gmail.com&quot;</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;jjnw nuhq eopy azfw&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="send_otp_email">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.send_otp_email">[docs]</a>
+<span class="k">def</span> <span class="nf">send_otp_email</span><span class="p">(</span><span class="n">recipient_email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">otp_code</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Envoie l&#39;OTP (code TOTP) par email au user.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">subject</span> <span class="o">=</span> <span class="s2">&quot;Votre code TOTP&quot;</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Votre code à 6 chiffres : </span><span class="si">{</span><span class="n">otp_code</span><span class="si">}</span><span class="se">\n</span><span class="s2">Il est valable 30 secondes.&quot;</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="n">MIMEMultipart</span><span class="p">()</span>
+    <span class="n">acc</span> <span class="o">=</span> <span class="n">accounts</span><span class="p">[</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">accounts</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="n">SENDER_EMAIL</span> <span class="o">=</span> <span class="n">acc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;email&quot;</span><span class="p">)</span>
+    <span class="n">SENDER_PASSWORD</span> <span class="o">=</span> <span class="n">acc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;password&quot;</span><span class="p">)</span>
+    <span class="n">message</span><span class="p">[</span><span class="s2">&quot;From&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SENDER_EMAIL</span>
+    <span class="n">message</span><span class="p">[</span><span class="s2">&quot;To&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">recipient_email</span>
+    <span class="n">message</span><span class="p">[</span><span class="s2">&quot;Subject&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subject</span>
+    <span class="n">message</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">MIMEText</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s2">&quot;plain&quot;</span><span class="p">))</span>
+
+    <span class="k">with</span> <span class="n">smtplib</span><span class="o">.</span><span class="n">SMTP</span><span class="p">(</span><span class="n">SMTP_SERVER</span><span class="p">,</span> <span class="n">SMTP_PORT</span><span class="p">)</span> <span class="k">as</span> <span class="n">server</span><span class="p">:</span>
+        <span class="n">server</span><span class="o">.</span><span class="n">starttls</span><span class="p">()</span>
+        <span class="n">server</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">SENDER_EMAIL</span><span class="p">,</span> <span class="n">SENDER_PASSWORD</span><span class="p">)</span>
+        <span class="n">server</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="send_totp_to_user">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.send_totp_to_user">[docs]</a>
+<span class="k">def</span> <span class="nf">send_totp_to_user</span><span class="p">(</span><span class="n">totp</span><span class="p">,</span> <span class="n">user_email</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Génère le code TOTP et l&#39;envoie par mail.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">current_otp</span> <span class="o">=</span> <span class="n">totp</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">current_otp</span><span class="p">,</span> <span class="s2">&quot;sayez&quot;</span><span class="p">)</span>
+    <span class="n">send_otp_email</span><span class="p">(</span><span class="n">user_email</span><span class="p">,</span> <span class="n">current_otp</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="verify_totp_code">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.verify_totp_code">[docs]</a>
+<span class="k">def</span> <span class="nf">verify_totp_code</span><span class="p">(</span><span class="n">totp</span><span class="p">,</span> <span class="n">user_input_code</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vérifie si le code TOTP entré par l&#39;utilisateur est correct</span>
+<span class="sd">    dans la fenêtre de code.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">totp</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">user_input_code</span><span class="p">)</span>  <span class="c1"># True si code correct, False sinon.</span></div>
+
+
+
+<span class="c1"># Identifiants Google</span>
+<span class="n">CLIENT_ID</span> <span class="o">=</span> <span class="s2">&quot;428963010703-4ehn75nf048kk43mmjpqksvva1d01qk8.apps.googleusercontent.com&quot;</span>
+<span class="n">REDIRECT_URI</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:5001/oauth2callback&quot;</span>
+<span class="n">AUTH_URL</span> <span class="o">=</span> <span class="s2">&quot;https://accounts.google.com/o/oauth2/v2/auth?response_type=code&amp;client_id=</span><span class="si">{}</span><span class="s2">&amp;redirect_uri=</span><span class="si">{}</span><span class="s2">&amp;scope=email+profile+openid&quot;</span>
+
+
+<span class="c1"># -----------------------------------------------</span>
+<span class="c1"># Dialog pour la saisie du code TOTP</span>
+<span class="c1"># -----------------------------------------------</span>
+<div class="viewcode-block" id="OtpDialog">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.OtpDialog">[docs]</a>
+<span class="k">class</span> <span class="nc">OtpDialog</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QDialog</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secret_key</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secret_key</span> <span class="o">=</span> <span class="n">secret_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;Vérification du code TOTP&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setModal</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_ui</span><span class="p">()</span>
+        <span class="c1"># Centrer la fenêtre</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFixedSize</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span>
+
+<div class="viewcode-block" id="OtpDialog.setup_ui">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.OtpDialog.setup_ui">[docs]</a>
+    <span class="k">def</span> <span class="nf">setup_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Entrez le code reçu par email :&quot;</span><span class="p">)</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">()</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setPointSize</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">font</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">codeEdit</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">codeEdit</span><span class="o">.</span><span class="n">setPlaceholderText</span><span class="p">(</span><span class="s2">&quot;Code à 6 chiffres&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">codeEdit</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">codeEdit</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">codeEdit</span><span class="o">.</span><span class="n">setMaxLength</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">codeEdit</span><span class="o">.</span><span class="n">setValidator</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QIntValidator</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">999999</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">buttonBox</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QDialogButtonBox</span><span class="p">(</span>
+            <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QDialogButtonBox</span><span class="o">.</span><span class="n">Ok</span> <span class="o">|</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QDialogButtonBox</span><span class="o">.</span><span class="n">Cancel</span><span class="p">,</span>
+            <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buttonBox</span><span class="o">.</span><span class="n">accepted</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buttonBox</span><span class="o">.</span><span class="n">rejected</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reject</span><span class="p">)</span>
+
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">alignment</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignHCenter</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codeEdit</span><span class="p">,</span> <span class="n">alignment</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignHCenter</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buttonBox</span><span class="p">,</span> <span class="n">alignment</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignHCenter</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="OtpDialog.get_code">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.OtpDialog.get_code">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">codeEdit</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Ui_MainWindow">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.Ui_MainWindow">[docs]</a>
+<span class="k">class</span> <span class="nc">Ui_MainWindow</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Classe gérant l&#39;interface utilisateur de la fenêtre d&#39;authentification.</span>
+<span class="sd">    Permet la connexion via email/mot de passe ou Google,</span>
+<span class="sd">    ainsi que l&#39;inscription de nouveaux utilisateurs.</span>
+
+<span class="sd">    Exemple:</span>
+<span class="sd">    &gt;&gt;&gt; app = QtWidgets.QApplication(sys.argv)</span>
+<span class="sd">    &gt;&gt;&gt; MainWindow = QtWidgets.QMainWindow()</span>
+<span class="sd">    &gt;&gt;&gt; ui = Ui_MainWindow()</span>
+<span class="sd">    &gt;&gt;&gt; ui.setupUi(MainWindow)</span>
+<span class="sd">    &gt;&gt;&gt; MainWindow.show()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ui_MainWindow.__init__">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.Ui_MainWindow.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise une nouvelle instance de Ui_MainWindow.</span>
+<span class="sd">        Configure l&#39;attribut totp à None pour une potentielle utilisation ultérieure.</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; ui = Ui_MainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; print(ui.totp)  # None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">totp</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Ui_MainWindow.setupUi">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.Ui_MainWindow.setupUi">[docs]</a>
+    <span class="k">def</span> <span class="nf">setupUi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">MainWindow</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Configure l&#39;interface utilisateur complète de la fenêtre d&#39;authentification.</span>
+<span class="sd">        Crée et positionne tous les widgets nécessaires.</span>
+
+<span class="sd">        :param MainWindow: Instance de QMainWindow à configurer</span>
+
+<span class="sd">        Le setup inclut:</span>
+<span class="sd">        - Configuration de la fenêtre principal*</span>
+<span class="sd">        - Chargement du fichier de style QSS</span>
+<span class="sd">        - Création des champs de saisie (nom d&#39;utilisateur, email, mot de passe)</span>
+<span class="sd">        - Mise en place des boutons (connexion Google, validation)</span>
+<span class="sd">        - Configuration des messages d&#39;erreur</span>
+<span class="sd">        - Mise en place du lien de création de compte</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; window = QtWidgets.QMainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; ui = Ui_MainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; ui.setupUi(window)</span>
+<span class="sd">        &gt;&gt;&gt; window.show()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">MainWindow</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;MainWindow&quot;</span><span class="p">)</span>
+        <span class="n">MainWindow</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mi">1035</span><span class="p">,</span> <span class="mi">774</span><span class="p">)</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">()</span>
+        <span class="n">icon</span><span class="o">.</span><span class="n">addPixmap</span><span class="p">(</span>
+            <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="s2">&quot;images/authentification/logo_alternatif.png&quot;</span><span class="p">),</span>
+            <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="o">.</span><span class="n">Normal</span><span class="p">,</span>
+            <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="o">.</span><span class="n">Off</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">MainWindow</span><span class="o">.</span><span class="n">setWindowIcon</span><span class="p">(</span><span class="n">icon</span><span class="p">)</span>
+
+        <span class="c1"># Charger le fichier QSS</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;authentification.qss&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">stylesheet</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="n">MainWindow</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">stylesheet</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">centralwidget</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">(</span><span class="n">MainWindow</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">centralwidget</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;centralwidget&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gridLayout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGridLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">centralwidget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gridLayout</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;gridLayout&quot;</span><span class="p">)</span>
+
+        <span class="c1"># --- Frame mire d&#39;authentification</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameMire</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">centralwidget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameMire</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">350</span><span class="p">,</span> <span class="mi">500</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameMire</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">350</span><span class="p">,</span> <span class="mi">500</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameMire</span><span class="o">.</span><span class="n">setFrameShape</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="o">.</span><span class="n">StyledPanel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameMire</span><span class="o">.</span><span class="n">setFrameShadow</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="o">.</span><span class="n">Raised</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameMire</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;frameMire&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameMire</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;verticalLayout&quot;</span><span class="p">)</span>
+
+        <span class="c1"># --- Titre</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameTitre</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameMire</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameTitre</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">60</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameTitre</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">60</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameTitre</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;frameTitre&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_5</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameTitre</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_5</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;verticalLayout_5&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameTitre</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">60</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">60</span><span class="p">))</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">()</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setFamily</span><span class="p">(</span><span class="s2">&quot;Tahoma&quot;</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setPointSize</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setBold</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setWeight</span><span class="p">(</span><span class="mi">75</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;titre&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_5</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameTitre</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignHCenter</span><span class="p">)</span>
+
+        <span class="c1"># --- Frame &quot;Nom d&#39;utilisateur&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameUser</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameMire</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameUser</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;frameUser&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_7</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameUser</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_7</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;verticalLayout_7&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titreUser</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameUser</span><span class="p">)</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">()</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setFamily</span><span class="p">(</span><span class="s2">&quot;Tahoma&quot;</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setPointSize</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setBold</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setWeight</span><span class="p">(</span><span class="mi">75</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titreUser</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titreUser</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;titreUser&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titreUser</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">160</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titreUser</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">160</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_7</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">titreUser</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputUser</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameUser</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputUser</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputUser</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">()</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setFamily</span><span class="p">(</span><span class="s2">&quot;Tahoma&quot;</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setPointSize</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputUser</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputUser</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;inputUser&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_7</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputUser</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameUser</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignHCenter</span><span class="p">)</span>
+
+        <span class="c1"># --- Frame Email</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameLogin</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameMire</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameLogin</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;frameLogin&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_2</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameLogin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_2</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;verticalLayout_2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titreMail</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameLogin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titreMail</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titreMail</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">()</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setFamily</span><span class="p">(</span><span class="s2">&quot;Tahoma&quot;</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setPointSize</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setBold</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setWeight</span><span class="p">(</span><span class="mi">75</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titreMail</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_2</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">titreMail</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputMail</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameLogin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputMail</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputMail</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">()</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setFamily</span><span class="p">(</span><span class="s2">&quot;Tahoma&quot;</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setPointSize</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputMail</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputMail</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;inputMail&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_2</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputMail</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameLogin</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignHCenter</span><span class="p">)</span>
+
+        <span class="c1"># --- Frame Password</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">framePassword</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameMire</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">framePassword</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;framePassword&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_3</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">framePassword</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_3</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;verticalLayout_3&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titrePassword</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">framePassword</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titrePassword</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">120</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">()</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setFamily</span><span class="p">(</span><span class="s2">&quot;Tahoma&quot;</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setPointSize</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setBold</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setWeight</span><span class="p">(</span><span class="mi">75</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titrePassword</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_3</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">titrePassword</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputPassword</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">framePassword</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputPassword</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputPassword</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">()</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setFamily</span><span class="p">(</span><span class="s2">&quot;Tahoma&quot;</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setPointSize</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputPassword</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputPassword</span><span class="o">.</span><span class="n">setEchoMode</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="o">.</span><span class="n">Password</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputPassword</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;inputPassword&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_3</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputPassword</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">framePassword</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignHCenter</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">frameUser</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frameLogin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">framePassword</span><span class="p">]:</span>
+            <span class="n">frame</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">350</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
+            <span class="n">frame</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">350</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
+
+        <span class="c1"># --- Bouton Google</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">google_login_button</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameMire</span><span class="p">)</span>
+        <span class="n">google_icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">(</span><span class="s2">&quot;images/authentification/logo_google.png&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">google_login_button</span><span class="o">.</span><span class="n">setIconSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">google_login_button</span><span class="o">.</span><span class="n">setIcon</span><span class="p">(</span><span class="n">google_icon</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">google_login_button</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">google_login_button</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">google_login_button</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignHCenter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">google_login_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">login_with_google</span><span class="p">)</span>
+
+        <span class="c1"># --- Label erreur</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameErreur</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameMire</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameErreur</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">350</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameErreur</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">350</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameErreur</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;frameErreur&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayoutErreur</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameErreur</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayoutErreur</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;verticalLayoutErreur&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelErreur</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameErreur</span><span class="p">)</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">()</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setFamily</span><span class="p">(</span><span class="s2">&quot;Tahoma&quot;</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setPointSize</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelErreur</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelErreur</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color: red;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelErreur</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelErreur</span><span class="o">.</span><span class="n">setWordWrap</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayoutErreur</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labelErreur</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frameErreur</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignHCenter</span><span class="p">)</span>
+
+        <span class="c1"># --- Bouton Valider</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameBouton</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameMire</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameBouton</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameBouton</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameBouton</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;frameBouton&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_4</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameBouton</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_4</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;verticalLayout_4&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boutonValider</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameBouton</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boutonValider</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">()</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setFamily</span><span class="p">(</span><span class="s2">&quot;Tahoma&quot;</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setPointSize</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setBold</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setWeight</span><span class="p">(</span><span class="mi">75</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boutonValider</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boutonValider</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;boutonValider&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_4</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">boutonValider</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameBouton</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignHCenter</span><span class="p">)</span>
+
+        <span class="c1"># --- Lien &quot;Créer un compte&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameCreerCompte</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameMire</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameCreerCompte</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameCreerCompte</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frameCreerCompte</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;frameCreerCompte&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_6</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameCreerCompte</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_6</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;verticalLayout_6&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boutonCreerCompte</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">(</span>
+            <span class="s2">&quot;&lt;a href=&#39;#&#39;&gt;Créer un compte&lt;/a&gt;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frameCreerCompte</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boutonCreerCompte</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boutonCreerCompte</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="mi">25</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boutonCreerCompte</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;boutonCreerCompte&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boutonCreerCompte</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boutonCreerCompte</span><span class="o">.</span><span class="n">linkActivated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_signup_form</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout_6</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">boutonCreerCompte</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verticalLayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameCreerCompte</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignHCenter</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">gridLayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frameMire</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">centralwidget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">140</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">160</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;frame&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horizontalLayout</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;horizontalLayout&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gridLayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignHCenter</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_2</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">centralwidget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_2</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;frame_2&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gridLayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">MainWindow</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">centralwidget</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_login_form</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span> <span class="o">=</span> <span class="n">MainWindow</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_form_state</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">retranslateUi</span><span class="p">(</span><span class="n">MainWindow</span><span class="p">)</span>
+        <span class="n">QtCore</span><span class="o">.</span><span class="n">QMetaObject</span><span class="o">.</span><span class="n">connectSlotsByName</span><span class="p">(</span><span class="n">MainWindow</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Ui_MainWindow.show_signup_form">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.Ui_MainWindow.show_signup_form">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_signup_form</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bascule entre le formulaire de connexion et le formulaire d&#39;inscription.</span>
+<span class="sd">        Met à jour l&#39;interface en conséquence via update_form_state().</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; ui = Ui_MainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; ui.setupUi(window)</span>
+<span class="sd">        &gt;&gt;&gt; ui.show_signup_form()  # Bascule vers le formulaire d&#39;inscription</span>
+<span class="sd">        &gt;&gt;&gt; print(ui.is_login_form)  # False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_login_form</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_login_form</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_form_state</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Ui_MainWindow.update_form_state">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.Ui_MainWindow.update_form_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_form_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Met à jour l&#39;état de l&#39;interface selon le mode actif (connexion ou inscription).</span>
+<span class="sd">        Gère la visibilité des champs, les textes affichés et les connexions des signaux.</span>
+
+<span class="sd">        Cette méthode:</span>
+<span class="sd">        - Déconnecte les anciens signaux</span>
+<span class="sd">        - Met à jour les textes et placeholders</span>
+<span class="sd">        - Configure la visibilité des widgets</span>
+<span class="sd">        - Reconnecte les nouveaux signaux appropriés</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; ui = Ui_MainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; ui.setupUi(window)</span>
+<span class="sd">        &gt;&gt;&gt; ui.is_login_form = False</span>
+<span class="sd">        &gt;&gt;&gt; ui.update_form_state()  # L&#39;interface passe en mode inscription</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_translate</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QCoreApplication</span><span class="o">.</span><span class="n">translate</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">boutonValider</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputMail</span><span class="o">.</span><span class="n">returnPressed</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputPassword</span><span class="o">.</span><span class="n">returnPressed</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_login_form</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">google_login_button</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frameUser</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputUser</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">titreUser</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="n">_translate</span><span class="p">(</span><span class="s2">&quot;MainWindow&quot;</span><span class="p">,</span> <span class="s2">&quot;TaskFlow - Login&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">titreUser</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">_translate</span><span class="p">(</span><span class="s2">&quot;MainWindow&quot;</span><span class="p">,</span> <span class="s2">&quot;Nom d&#39;Utilisateur&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">_translate</span><span class="p">(</span><span class="s2">&quot;MainWindow&quot;</span><span class="p">,</span> <span class="s2">&quot;S&#39;identifier&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">boutonValider</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">_translate</span><span class="p">(</span><span class="s2">&quot;MainWindow&quot;</span><span class="p">,</span> <span class="s2">&quot;Valider&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">boutonCreerCompte</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&lt;a href=&#39;#&#39;&gt;Créer un compte&lt;/a&gt;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputPassword</span><span class="o">.</span><span class="n">setPlaceholderText</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputMail</span><span class="o">.</span><span class="n">setPlaceholderText</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">boutonValider</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handle_login</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputMail</span><span class="o">.</span><span class="n">returnPressed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handle_login</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputPassword</span><span class="o">.</span><span class="n">returnPressed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handle_login</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">google_login_button</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frameUser</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputUser</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">titreUser</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="n">_translate</span><span class="p">(</span><span class="s2">&quot;MainWindow&quot;</span><span class="p">,</span> <span class="s2">&quot;TaskFlow - Inscription&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">_translate</span><span class="p">(</span><span class="s2">&quot;MainWindow&quot;</span><span class="p">,</span> <span class="s2">&quot;Créer un compte&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">boutonValider</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">_translate</span><span class="p">(</span><span class="s2">&quot;MainWindow&quot;</span><span class="p">,</span> <span class="s2">&quot;S&#39;inscrire&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">boutonCreerCompte</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&lt;a href=&#39;#&#39;&gt;Retour&lt;/a&gt;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputPassword</span><span class="o">.</span><span class="n">setPlaceholderText</span><span class="p">(</span><span class="s2">&quot;Minimum 8 caractères&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputMail</span><span class="o">.</span><span class="n">setPlaceholderText</span><span class="p">(</span><span class="s2">&quot;exemple@email.com&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputUser</span><span class="o">.</span><span class="n">setPlaceholderText</span><span class="p">(</span><span class="s2">&quot;exemple&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">boutonValider</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handle_signup</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputMail</span><span class="o">.</span><span class="n">returnPressed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handle_signup</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputPassword</span><span class="o">.</span><span class="n">returnPressed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handle_signup</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Ui_MainWindow.handle_login">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.Ui_MainWindow.handle_login">[docs]</a>
+    <span class="k">def</span> <span class="nf">handle_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gère le processus de connexion utilisateur.</span>
+<span class="sd">        Vérifie les identifiants via Argon2 puis met en place l&#39;authentification TOTP.</span>
+
+<span class="sd">        Le processus comprend:</span>
+<span class="sd">        1. Validation des identifiants utilisateur</span>
+<span class="sd">        2. Récupération/création de la clé secrète TOTP</span>
+<span class="sd">        3. Envoi du code TOTP par email</span>
+<span class="sd">        4. Vérification du code saisi</span>
+<span class="sd">        5. Ouverture de la fenêtre principale si authentification réussie</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; ui = Ui_MainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; ui.setupUi(window)</span>
+<span class="sd">        &gt;&gt;&gt; ui.inputMail.setText(&quot;user@example.com&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; ui.inputPassword.setText(&quot;password123&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; ui.handle_login()  # Lance le processus de connexion</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_error_message</span><span class="p">()</span>
+
+        <span class="n">email</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputMail</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputPassword</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">is_ok</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">check_user_credentials</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_ok</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_error_message</span><span class="p">(</span><span class="s2">&quot;Échec de connexion Email ou mot de passe incorrect&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="c1"># 1) Authentification OK - Récupérer ou générer la clé secrète</span>
+            <span class="n">secret_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_or_create_user_secret</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">totp</span> <span class="o">=</span> <span class="n">pyotp</span><span class="o">.</span><span class="n">TOTP</span><span class="p">(</span><span class="n">secret_key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">secret_key</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_error_message</span><span class="p">(</span><span class="s2">&quot;Erreur Impossible de récupérer ou de créer la clé TOTP&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="c1"># 2) Ouvrir une popup demandant le code</span>
+            <span class="n">otp_dialog</span> <span class="o">=</span> <span class="n">OtpDialog</span><span class="p">(</span><span class="n">secret_key</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Affichage de la popup OTP...&quot;</span><span class="p">)</span>
+
+            <span class="c1"># 3) Envoyer le code TOTP par email</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Envoi du code TOTP par email...&quot;</span><span class="p">)</span>
+            <span class="n">send_totp_to_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">totp</span><span class="p">,</span> <span class="n">email</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Code TOTP envoyé avec succès.&quot;</span><span class="p">)</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="n">otp_dialog</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Popup OTP fermée, résultat :&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QDialog</span><span class="o">.</span><span class="n">Accepted</span><span class="p">:</span>
+                <span class="n">entered_code</span> <span class="o">=</span> <span class="n">otp_dialog</span><span class="o">.</span><span class="n">get_code</span><span class="p">()</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Code OTP saisi :&quot;</span><span class="p">,</span> <span class="n">entered_code</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">verify_totp_code</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">totp</span><span class="p">,</span> <span class="n">entered_code</span><span class="p">):</span>
+                    <span class="n">userID</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">get_userID_by_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+                    <span class="n">DB_API</span><span class="o">.</span><span class="n">set_user_status</span><span class="p">(</span><span class="n">userID</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">show_success_message</span><span class="p">(</span><span class="s2">&quot;Connexion réussie Bienvenue!&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">open_main_window</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">show_error_message</span><span class="p">(</span><span class="s2">&quot;Erreur Code invalide ou expiré&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_error_message</span><span class="p">(</span><span class="s2">&quot;OTP annulé Connexion abandonnée&quot;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur lors de la connexion ou de l&#39;authentification : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_error_message</span><span class="p">(</span><span class="s2">&quot;Erreur critique Une erreur est survenue : </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Ui_MainWindow.login_with_google">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.Ui_MainWindow.login_with_google">[docs]</a>
+    <span class="k">def</span> <span class="nf">login_with_google</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initie le processus de connexion via Google.</span>
+<span class="sd">        Ouvre le navigateur sur la page d&#39;authentification Google.</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; ui = Ui_MainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; ui.setupUi(window)</span>
+<span class="sd">        &gt;&gt;&gt; ui.google_login_button.click()  # ou ui.login_with_google()</span>
+<span class="sd">        &gt;&gt;&gt; # Ouvre le navigateur sur la page de connexion Google</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ouverture de la page de connexion Google...&quot;</span><span class="p">)</span>
+        <span class="n">webbrowser</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">AUTH_URL</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">CLIENT_ID</span><span class="p">,</span> <span class="n">REDIRECT_URI</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Navigateur ouvert. En attente du callback Google...&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Ui_MainWindow.connect_google_user">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.Ui_MainWindow.connect_google_user">[docs]</a>
+    <span class="k">def</span> <span class="nf">connect_google_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finalise la connexion d&#39;un utilisateur via Google.</span>
+
+<span class="sd">        :param user_data: Dictionnaire contenant les informations de l&#39;utilisateur Google</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; ui = Ui_MainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; ui.setupUi(window)</span>
+<span class="sd">        &gt;&gt;&gt; user_data = {</span>
+<span class="sd">        &gt;&gt;&gt;     &quot;name&quot;: &quot;John Doe&quot;,</span>
+<span class="sd">        &gt;&gt;&gt;     &quot;email&quot;: &quot;john.doe@gmail.com&quot;</span>
+<span class="sd">        &gt;&gt;&gt; }</span>
+<span class="sd">        &gt;&gt;&gt; ui.connect_google_user(user_data)</span>
+<span class="sd">        &gt;&gt;&gt; # L&#39;utilisateur est connecté et la fenêtre principale s&#39;ouvre</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user_data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[PyQt] Erreur : données utilisateur invalides.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="n">user_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;Utilisateur&quot;</span><span class="p">)</span>
+        <span class="n">email</span> <span class="o">=</span> <span class="n">user_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="s2">&quot;Email inconnu&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[PyQt] Bienvenue </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">email</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_success_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bienvenue </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> !&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">open_main_window_google</span><span class="p">(</span><span class="n">email</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Ui_MainWindow.open_main_window_google">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.Ui_MainWindow.open_main_window_google">[docs]</a>
+    <span class="k">def</span> <span class="nf">open_main_window_google</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ouvre la fenêtre principale après une connexion réussie via Google.</span>
+<span class="sd">        Configure l&#39;utilisateur actif avec l&#39;email Google.</span>
+
+<span class="sd">        :param email: Email de l&#39;utilisateur Google</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; ui = Ui_MainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; ui.setupUi(window)</span>
+<span class="sd">        &gt;&gt;&gt; ui.open_main_window_google(&quot;user@gmail.com&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; # La fenêtre principale s&#39;ouvre avec l&#39;utilisateur configuré</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">email</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[PyQt] Erreur : email invalide.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_error_message</span><span class="p">(</span><span class="s2">&quot;Erreur : email non valide.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[PyQt] Ouverture de la fenêtre principale avec l&#39;utilisateur </span><span class="si">{</span><span class="n">email</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_window_ui</span> <span class="o">=</span> <span class="n">MainWindowUI</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_window_ui</span><span class="o">.</span><span class="n">set_current_user</span><span class="p">(</span>
+            <span class="n">email</span>
+        <span class="p">)</span>  <span class="c1"># Configure l&#39;utilisateur avec l&#39;email récupéré</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_window_ui</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Ui_MainWindow.handle_signup">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.Ui_MainWindow.handle_signup">[docs]</a>
+    <span class="k">def</span> <span class="nf">handle_signup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gère le processus d&#39;inscription d&#39;un nouvel utilisateur.</span>
+
+<span class="sd">        Effectue les validations suivantes:</span>
+<span class="sd">        - Vérifie que l&#39;email n&#39;est pas une adresse Gmail</span>
+<span class="sd">        - Valide le format de l&#39;email</span>
+<span class="sd">        - Vérifie la force du mot de passe via zxcvbn</span>
+<span class="sd">        - Contrôle l&#39;unicité de l&#39;email et du nom d&#39;utilisateur</span>
+
+<span class="sd">        :return: True si l&#39;inscription est réussie, False sinon</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; ui = Ui_MainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; ui.setupUi(window)</span>
+<span class="sd">        &gt;&gt;&gt; ui.show_signup_form()  # Passage en mode inscription</span>
+<span class="sd">        &gt;&gt;&gt; ui.inputUser.setText(&quot;john_doe&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; ui.inputMail.setText(&quot;john@example.com&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; ui.inputPassword.setText(&quot;StrongP@ssw0rd&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; success = ui.handle_signup()</span>
+<span class="sd">        &gt;&gt;&gt; if success:</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Inscription réussie!&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_error_message</span><span class="p">()</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputUser</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">email</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputMail</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputPassword</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+
+        <span class="c1"># Vérifier que l&#39;email ne termine pas par @gmail.com</span>
+        <span class="k">if</span> <span class="n">email</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;@gmail.com&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_error_message</span><span class="p">(</span>
+                <span class="s2">&quot;Erreur d&#39;inscription Impossible de créer un compte &quot;</span>
+                <span class="s2">&quot;avec un email se terminant par &#39;@gmail.com&#39;&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Validation de l&#39;adresse email</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_email</span><span class="p">(</span><span class="n">email</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_error_message</span><span class="p">(</span>
+                <span class="s2">&quot;Erreur d&#39;inscription Veuillez entrer une adresse email valide&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Vérification de la force du mot de passe avec zxcvbn</span>
+        <span class="n">password_strength</span> <span class="o">=</span> <span class="n">zxcvbn</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">password_strength</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># Score requis : 3 ou plus</span>
+            <span class="n">feedback</span> <span class="o">=</span> <span class="n">password_strength</span><span class="p">[</span><span class="s2">&quot;feedback&quot;</span><span class="p">]</span>
+            <span class="n">warning</span> <span class="o">=</span> <span class="n">feedback</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;warning&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">suggestions</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">feedback</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;suggestions&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_error_message</span><span class="p">(</span>
+                <span class="s2">&quot;Mot de passe faible&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Votre mot de passe est trop faible. </span><span class="si">{</span><span class="n">warning</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">suggestions</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Vérifier que le mot de passe a au moins 8 caractères</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">password</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_error_message</span><span class="p">(</span>
+                <span class="s2">&quot;Erreur d&#39;inscription Le mot de passe doit contenir au moins 8 caractères&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Vérification si l&#39;email existe déjà</span>
+        <span class="n">existing_email</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">get_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">existing_email</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">existing_email</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_error_message</span><span class="p">(</span><span class="s2">&quot;Erreur d&#39;inscription Cette adresse email est déjà utilisée&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Vérification si le nom d&#39;utilisateur existe déjà</span>
+        <span class="n">existing_username</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">existing_username</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">existing_username</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_error_message</span><span class="p">(</span><span class="s2">&quot;Erreur d&#39;inscription Ce nom d&#39;utilisateur est déjà utilisé&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Création du compte utilisateur</span>
+        <span class="n">is_google_user</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># forcé à 0 pour les comptes non Google</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">add_user</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">is_google_user</span><span class="p">)</span>
+            <span class="n">DB_API</span><span class="o">.</span><span class="n">add_user_status</span><span class="p">(</span><span class="n">success</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">success</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">success</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_success_message</span><span class="p">(</span>
+                    <span class="s2">&quot;Inscription réussie Votre compte a été créé avec succès!&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_login_form</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_form_state</span><span class="p">()</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_error_message</span><span class="p">(</span>
+                    <span class="s2">&quot;Erreur d&#39;inscription Erreur lors de la création du compte&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_error_message</span><span class="p">(</span><span class="s2">&quot;Erreur d&#39;inscription Une erreur est survenue: </span><span class="si">{e!s}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Ui_MainWindow.validate_email">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.Ui_MainWindow.validate_email">[docs]</a>
+    <span class="k">def</span> <span class="nf">validate_email</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Valide le format d&#39;une adresse email.</span>
+
+<span class="sd">        :param email: Adresse email à valider</span>
+<span class="sd">        :return: True si le format est valide, False sinon</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; ui = Ui_MainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; print(ui.validate_email(&quot;user@example.com&quot;))  # True</span>
+<span class="sd">        &gt;&gt;&gt; print(ui.validate_email(&quot;invalid.email&quot;))  # False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">re</span>
+
+        <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$&quot;</span>
+        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">email</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Ui_MainWindow.get_or_create_user_secret">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.Ui_MainWindow.get_or_create_user_secret">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_or_create_user_secret</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Récupère la clé secrète TOTP d&#39;un utilisateur ou en crée une nouvelle.</span>
+
+<span class="sd">        :param email: Email de l&#39;utilisateur</span>
+<span class="sd">        :return: Clé secrète TOTP</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; ui = Ui_MainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; secret = ui.get_or_create_user_secret(&quot;user@example.com&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; print(len(secret))  # 32 (longueur typique d&#39;une clé TOTP)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Exemple: On imagine que DB_API.get_totp_secret(email) renvoie la clé ou None</span>
+        <span class="n">existing_secret</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">get_totp_secret</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">existing_secret</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">existing_secret</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">existing_secret</span>
+
+        <span class="c1"># Sinon on génère</span>
+        <span class="n">new_secret</span> <span class="o">=</span> <span class="n">pyotp</span><span class="o">.</span><span class="n">random_base32</span><span class="p">()</span>
+        <span class="n">DB_API</span><span class="o">.</span><span class="n">set_totp_secret</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">new_secret</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_secret</span></div>
+
+
+<div class="viewcode-block" id="Ui_MainWindow.show_error_message">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.Ui_MainWindow.show_error_message">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_error_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Affiche un message d&#39;erreur temporaire dans l&#39;interface.</span>
+
+<span class="sd">        :param message: Message d&#39;erreur à afficher</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; ui = Ui_MainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; ui.setupUi(window)</span>
+<span class="sd">        &gt;&gt;&gt; ui.show_error_message(&quot;Email invalide!&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; # Le message s&#39;affiche en rouge et disparaît après 3 secondes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelErreur</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="o">.</span><span class="n">singleShot</span><span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">clear_error_message</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Ui_MainWindow.clear_error_message">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.Ui_MainWindow.clear_error_message">[docs]</a>
+    <span class="k">def</span> <span class="nf">clear_error_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Efface le message d&#39;erreur actuellement affiché dans l&#39;interface.</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; ui = Ui_MainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; ui.setupUi(window)</span>
+<span class="sd">        &gt;&gt;&gt; ui.show_error_message(&quot;Une erreur&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; ui.clear_error_message()  # Le message disparaît</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelErreur</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Ui_MainWindow.show_success_message">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.Ui_MainWindow.show_success_message">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_success_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Affiche un message de succès temporaire dans l&#39;interface.</span>
+
+<span class="sd">        :param message: Message de succès à afficher</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; ui = Ui_MainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; ui.setupUi(window)</span>
+<span class="sd">        &gt;&gt;&gt; ui.show_success_message(&quot;Connexion réussie!&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; # Le message s&#39;affiche en blanc et disparaît après 3 secondes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelErreur</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color: white;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelErreur</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="o">.</span><span class="n">singleShot</span><span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">clear_error_message</span><span class="p">)</span>
+        <span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="o">.</span><span class="n">singleShot</span><span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">labelErreur</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color: red;&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Ui_MainWindow.open_main_window">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.Ui_MainWindow.open_main_window">[docs]</a>
+    <span class="k">def</span> <span class="nf">open_main_window</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ferme la fenêtre d&#39;authentification et ouvre la fenêtre principale</span>
+<span class="sd">        après une connexion réussie via email/mot de passe.</span>
+<span class="sd">        Configure l&#39;utilisateur actif avec l&#39;email utilisé pour la connexion.</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; ui = Ui_MainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; ui.setupUi(window)</span>
+<span class="sd">        &gt;&gt;&gt; ui.inputMail.setText(&quot;user@example.com&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; ui.open_main_window()</span>
+<span class="sd">        &gt;&gt;&gt; # La fenêtre principale s&#39;ouvre avec l&#39;utilisateur configuré</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_window</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_window_ui</span> <span class="o">=</span> <span class="n">MainWindowUI</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_window_ui</span><span class="o">.</span><span class="n">set_current_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputMail</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_window_ui</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Ui_MainWindow.retranslateUi">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.Ui_MainWindow.retranslateUi">[docs]</a>
+    <span class="k">def</span> <span class="nf">retranslateUi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">MainWindow</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Configure les textes de l&#39;interface utilisateur.</span>
+<span class="sd">        Utilise QCoreApplication.translate pour la gestion des traductions.</span>
+
+<span class="sd">        :param MainWindow: Instance de QMainWindow dont les textes doivent être traduits</span>
+
+<span class="sd">        Cette méthode définit:</span>
+<span class="sd">        - Le titre de la fenêtre</span>
+<span class="sd">        - Les labels des champs de saisie</span>
+<span class="sd">        - Le texte des boutons</span>
+<span class="sd">        - Les autres éléments textuels de l&#39;interface</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; ui = Ui_MainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; window = QtWidgets.QMainWindow()</span>
+<span class="sd">        &gt;&gt;&gt; ui.setupUi(window)</span>
+<span class="sd">        &gt;&gt;&gt; ui.retranslateUi(window)</span>
+<span class="sd">        &gt;&gt;&gt; print(window.windowTitle())  # &quot;TaskFlow - Login&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_translate</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QCoreApplication</span><span class="o">.</span><span class="n">translate</span>
+        <span class="n">MainWindow</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="n">_translate</span><span class="p">(</span><span class="s2">&quot;MainWindow&quot;</span><span class="p">,</span> <span class="s2">&quot;TaskFlow - Login&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titreUser</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">_translate</span><span class="p">(</span><span class="s2">&quot;MainWindow&quot;</span><span class="p">,</span> <span class="s2">&quot;Nom d&#39;Utilisateur&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">_translate</span><span class="p">(</span><span class="s2">&quot;MainWindow&quot;</span><span class="p">,</span> <span class="s2">&quot;S&#39;identifier&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titreMail</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">_translate</span><span class="p">(</span><span class="s2">&quot;MainWindow&quot;</span><span class="p">,</span> <span class="s2">&quot;E-Mail&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">titrePassword</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">_translate</span><span class="p">(</span><span class="s2">&quot;MainWindow&quot;</span><span class="p">,</span> <span class="s2">&quot;Mot de passe&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boutonValider</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">_translate</span><span class="p">(</span><span class="s2">&quot;MainWindow&quot;</span><span class="p">,</span> <span class="s2">&quot;Valider&quot;</span><span class="p">))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="MainWindow">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.MainWindow">[docs]</a>
+<span class="k">class</span> <span class="nc">MainWindow</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMainWindow</span><span class="p">,</span> <span class="n">Ui_MainWindow</span><span class="p">):</span>
+<div class="viewcode-block" id="MainWindow.__init__">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.MainWindow.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise la classe Ui_MainWindow.</span>
+
+<span class="sd">        Cette méthode initialise les valeurs de l&#39;utilisateur actuel et de l&#39;ID utilisateur.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MainWindow</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setupUi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MainWindow.closeEvent">
+<a class="viewcode-back" href="../../../frontend.html#front_end.authentification.authentification.MainWindow.closeEvent">[docs]</a>
+    <span class="k">def</span> <span class="nf">closeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Close clicked authentif&quot;</span><span class="p">)</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Auteur.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

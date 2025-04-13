@@ -1,0 +1,97 @@
+/* Styles globaux pour tous les QWidget */
+QWidget#centralwidget {
+    border-image: url("./images/authentification/colorkit (5).png");
+    border-repeat: no-repeat; /* Empêche la répétition de l'image */
+    border-size: cover; /* Redimensionne l'image pour couvrir tout le widget */
+}
+
+#frame {
+    border-image: url("./images/authentification/TASKFLOW (3).png");
+    border-size: cover; /* Redimensionne l'image pour couvrir tout le widget */
+}
+
+/* Style pour frameMire */
+#frameMire {
+    background-color: rgba(92, 92, 92, 190);
+    border-radius: 15;
+}
+
+/* Style pour frameTitre */
+#frameTitre {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* Style pour frameLogin */
+#frameLogin {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* Style pour frameCreerCompte */
+#frameCreerCompte {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* Style pour titres */
+QLabel {
+    color: rgb(255, 255, 255);
+}
+
+/* Style pour inputMail et inputPassword */
+#inputMail, #inputPassword, #inputUser {
+    background-color: rgb(92, 92, 92);
+    color: rgb(255, 255, 255);
+    selection-color: rgb(92, 92, 92);
+    selection-background-color: rgb(255, 255, 255);
+    border-radius: 5;
+}
+
+/* Style pour boutonValider */
+QPushButton {
+    color: rgb(255, 255, 255);
+    background-color: rgb(92, 92, 92);
+    border-radius: 5;
+}
+
+QPushButton:hover {
+    background-color: rgb(2, 80, 196);
+}
+
+QPushButton:pressed {
+    background-color: rgb(92, 92, 92);
+}
+
+/* Nouveaux styles de l'interface principale */
+#icon_name_widget, #icon_only_widget {
+    background-color: rgb(60, 139, 238);
+    color: white;
+}
+
+#icon_name_widget QPushButton,
+#icon_only_widget QPushButton {
+    color: white;
+    height: 30px;
+    border: none;
+    border-radius: 10px;
+}
+
+#icon_name_widget QPushButton:checked,
+#icon_only_widget QPushButton:checked {
+    background-color: #F5FAFE;
+    color: #1F95EF;
+    font-weight: bold;
+}
+
+#icon_only_widget QPushButton {
+    text-align: left;
+    padding-left: 10px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.bouton_menu {
+    border: none;
+}
+
+#stackedWidget {
+    background-color: rgb(118, 132, 134);
+}

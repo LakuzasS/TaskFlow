@@ -1,0 +1,18 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>../image et recources/dashboard.png</file>
+    <file>../image et recources/dashboard_white.png</file>
+    <file>../image et recources/Design_sans_titre__3_-removebg-preview_1.png</file>
+    <file>../image et recources/image (1).png</file>
+    <file>../image et recources/log_out.png</file>
+    <file>../image et recources/log_out_white.png</file>
+    <file>../image et recources/menu.png</file>
+    <file>../image et recources/messages.png</file>
+    <file>../image et recources/messages_white.png</file>
+    <file>../image et recources/notifications.png</file>
+    <file>../image et recources/notifications_white.png</file>
+    <file>../image et recources/profile.png</file>
+    <file>../image et recources/profile_white.png</file>
+    <file>../image et recources/search.png</file>
+  </qresource>
+</RCC>

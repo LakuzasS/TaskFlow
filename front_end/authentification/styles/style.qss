@@ -1,0 +1,90 @@
+/* Application globale de la police */
+* {
+    font-family: "SF Pro Text";
+    font-size: 14px; /* Taille par défaut */
+    color: #333333; /* Couleur du texte (facultatif) */
+}
+
+/* Style pour les labels */
+QLabel {
+    font-family: "SF Pro Text";
+    font-size: 14px;
+}
+
+/* Style pour les boutons */
+QPushButton {
+    font-family: "SF Pro Text";
+    font-size: 12px;
+    font-weight: bold;
+    background-color: #0066cc;
+    color: white;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #0080ff;
+}
+
+/* Style pour les entrées texte */
+QLineEdit, QPlainTextEdit, QTextEdit {
+    font-family: "SF Pro Text";
+    font-size: 13px;
+    border: 1px solid #cccccc;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+/* Style pour les listes et tableaux */
+QListWidget, QTreeWidget, QTableWidget {
+    font-family: "SF Pro Text";
+    font-size: 13px;
+}
+
+/* Style pour les onglets */
+QTabWidget::pane {
+    border: 1px solid #cccccc;
+    padding: 10px;
+}
+
+QTabBar::tab {
+    font-family: "SF Pro Text";
+    font-size: 12px;
+    background-color: #f0f0f0;
+    padding: 5px 10px;
+    border: 1px solid #cccccc;
+}
+
+QTabBar::tab:selected {
+    background-color: #ffffff;
+    font-weight: bold;
+    border-bottom: none;
+}
+
+/* Style pour les barres de défilement */
+QScrollBar:vertical, QScrollBar:horizontal {
+    border: 1px solid #cccccc;
+    background: #f0f0f0;
+}
+
+QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+    background: #cccccc;
+    border-radius: 5px;
+}
+
+/* Style pour les groupes */
+QGroupBox {
+    font-family: "SF Pro Text";
+    font-size: 13px;
+    border: 2px solid #8f8f91;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    font-weight: bold;
+    padding: 0 5px;
+    background-color: #ffffff;
+}

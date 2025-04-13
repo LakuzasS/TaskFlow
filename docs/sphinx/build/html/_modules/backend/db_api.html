@@ -1,0 +1,1406 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>backend.db_api &mdash; SAE502-TaskFlow 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            SAE502-TaskFlow
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table des matières</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../backend.html">Backend Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../frontend.html">Frontend Modules</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SAE502-TaskFlow</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">backend.db_api</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for backend.db_api</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">argon2</span> <span class="kn">import</span> <span class="n">PasswordHasher</span>
+<span class="kn">from</span> <span class="nn">argon2</span> <span class="kn">import</span> <span class="n">exceptions</span> <span class="k">as</span> <span class="n">argon2_exceptions</span>
+
+<span class="kn">from</span> <span class="nn">mysql.connector.cursor</span> <span class="kn">import</span> <span class="n">MySQLCursor</span>
+<span class="kn">from</span> <span class="nn">backend.db_helper</span> <span class="kn">import</span> <span class="n">cm_cursor</span><span class="p">,</span> <span class="n">ResultType</span><span class="p">,</span> <span class="n">cm_conn</span>
+<span class="kn">from</span> <span class="nn">backend.db_requests</span> <span class="kn">import</span> <span class="n">_Requests</span>
+
+<span class="n">_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">ph</span> <span class="o">=</span> <span class="n">PasswordHasher</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="DB_API">
+<a class="viewcode-back" href="../../backend.html#backend.db_api.DB_API">[docs]</a>
+<span class="k">class</span> <span class="nc">DB_API</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Classe permettant d&#39;exécuter les commandes vers la DB SQL.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">check_user_credentials</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">plain_password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Vérifie si l&#39;utilisateur &#39;email&#39; existe et si le mot de passe &#39;plain_password&#39;</span>
+<span class="sd">        correspond (Argon2). Retourne True si OK, sinon False.</span>
+
+<span class="sd">        :param email: Email de l&#39;utilisateur</span>
+<span class="sd">        :param plain_password: Mot de passe en clair de l&#39;utilisateur</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: True si les identifiants sont corrects, False sinon</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; is_valid = DB_API.check_user_credentials(&quot;email@example.com&quot;, &quot;password123&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; if is_valid:</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Identifiants valides&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_password_from_email</span><span class="p">,</span> <span class="p">(</span><span class="n">email</span><span class="p">,))</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">row</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Email inconnu</span>
+
+        <span class="n">hashed_password</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">hashed_password</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Pas de mot de passe stocké =&gt; compte Google ?</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ph</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">hashed_password</span><span class="p">,</span> <span class="n">plain_password</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ph</span><span class="o">.</span><span class="n">check_needs_rehash</span><span class="p">(</span><span class="n">hashed_password</span><span class="p">):</span>
+                <span class="n">new_hash</span> <span class="o">=</span> <span class="n">ph</span><span class="o">.</span><span class="n">hash</span><span class="p">(</span><span class="n">plain_password</span><span class="p">)</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">update_user_password</span><span class="p">,</span> <span class="p">(</span><span class="n">new_hash</span><span class="p">,</span> <span class="n">email</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="n">argon2_exceptions</span><span class="o">.</span><span class="n">VerifyMismatchError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">add_user</span><span class="p">(</span>
+        <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_google_user</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ajoute un nouvel utilisateur dans la DB.</span>
+<span class="sd">        - Si is_google_user == False, hache le password (Argon2).</span>
+<span class="sd">        - Sinon, on stocke un placeholder (ex: &quot;&quot;).</span>
+<span class="sd">        Retourne l&#39;ID (userID) inséré, ou un objet Exception en cas d&#39;erreur.</span>
+
+<span class="sd">        :param username: Nom d&#39;utilisateur</span>
+<span class="sd">        :param password: Mot de passe de l&#39;utilisateur</span>
+<span class="sd">        :param email: Email de l&#39;utilisateur</span>
+<span class="sd">        :param is_google_user: Indique si l&#39;utilisateur utilise un compte Google</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: ID de l&#39;utilisateur inséré ou Exception en cas d&#39;erreur</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; user_id = DB_API.add_user(&quot;username&quot;, &quot;password123&quot;, &quot;email@example.com&quot;, False)</span>
+<span class="sd">        &gt;&gt;&gt; if not isinstance(user_id, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(f&quot;Utilisateur ajouté avec l&#39;ID: {user_id}&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_google_user</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">password</span> <span class="o">=</span> <span class="n">ph</span><span class="o">.</span><span class="n">hash</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">e</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">add_user</span><span class="p">,</span> <span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">is_google_user</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">lastrowid</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">e</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_task_infoID_by_taskID</span><span class="p">(</span><span class="n">task_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récupérer l&#39;ID des informations d&#39;une tâche en fonction de son ID.</span>
+
+<span class="sd">        Cette fonction renvoie un tuple comprenant l&#39;ID des informations de la tâche.</span>
+<span class="sd">        En cas d&#39;échec, elle renverra None ou dans certains cas, un objet de type Exception.</span>
+
+<span class="sd">        :param task_id: ID de la tâche</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: ID des informations de la tâche ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; task_info_id = DB_API.get_task_infoID_by_taskID(1)</span>
+<span class="sd">        &gt;&gt;&gt; if task_info_id and not isinstance(task_info_id, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(task_info_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_task_infoID_by_taskID</span><span class="p">,</span> <span class="p">(</span><span class="n">task_id</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_task_infoID_by_subtaskID</span><span class="p">(</span><span class="n">subtask_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récupérer l&#39;ID des informations d&#39;une sous tâche en fonction de son ID.</span>
+
+<span class="sd">        Cette fonction renvoie un tuple comprenant l&#39;ID des informations de la sous tâche.</span>
+<span class="sd">        En cas d&#39;échec, elle renverra None ou dans certains cas, un objet de type Exception.</span>
+
+<span class="sd">        :param subtask_id: ID de la sous tâche</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: ID des informations de la tâche ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; task_info_id = DB_API.get_task_infoID_by_subtaskID(1)</span>
+<span class="sd">        &gt;&gt;&gt; if task_info_id and not isinstance(task_info_id, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(task_info_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_task_infoID_by_subtaskID</span><span class="p">,</span> <span class="p">(</span><span class="n">subtask_id</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_all_infos_from_email</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récupérer toutes les informations d&#39;un utilisateur en fonction</span>
+<span class="sd">        de son email dans la DB.</span>
+
+<span class="sd">        Cette fonction renvoie un tuple comprenant toutes les informations liées</span>
+<span class="sd">        à un utilisateur.</span>
+<span class="sd">        Si une erreur survient, la fonction renvoie un objet de type Exception.</span>
+
+<span class="sd">        :param email: Email de l&#39;utilisateur</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: Résultat de la commande ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; user_info = DB_API.get_all_infos_from_email(&quot;test@example.com&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; if user_info and not isinstance(user_info, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(user_info)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_all_infos_from_email</span><span class="p">,</span> <span class="p">(</span><span class="n">email</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">delete_user_status</span><span class="p">(</span><span class="n">userID</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Supprime le statut d&#39;un utilisateur dans la base de données.</span>
+
+<span class="sd">        Cette fonction exécute une requête pour supprimer le statut d&#39;un utilisateur</span>
+<span class="sd">        en fonction de son ID. En cas de succès, elle renvoie None. En cas d&#39;échec,</span>
+<span class="sd">        elle renvoie une exception.</span>
+
+<span class="sd">        :param userID: ID de l&#39;utilisateur dont le statut doit être supprimé</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: None en cas de succès, ou une exception en cas d&#39;échec</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; err = DB_API.delete_user_status(1)</span>
+<span class="sd">        &gt;&gt;&gt; if not isinstance(err, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Statut de l&#39;utilisateur supprimé avec succès&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">delete_user_status</span><span class="p">,</span> <span class="p">(</span><span class="n">userID</span><span class="p">,))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_all_users</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récuperer tous les utilisateurs de la DB.</span>
+
+<span class="sd">        Cette fonction renvoie une liste de tuples comprenant les</span>
+<span class="sd">        users sous la forme (userID, username, email, is_google_user).</span>
+<span class="sd">        Cette fonction peut ne pas fonctionner, dans ce cas elle</span>
+<span class="sd">        renvoie None ou dans certains cas, un objet de type Exception.</span>
+
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: resultat de la commande ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; users = DB_API.get_all_users()</span>
+<span class="sd">        &gt;&gt;&gt; if users and not isinstance(users, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(users)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_all_users</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_project_id_by_project_name</span><span class="p">(</span><span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récuperer le project id en fonction du project name de la DB.</span>
+
+<span class="sd">        Cette fonction renvoie un tuple comprenant le project id</span>
+<span class="sd">        sous la forme (project_id,).</span>
+<span class="sd">        Cette fonction peut ne pas fonctionner, dans ce cas elle</span>
+
+<span class="sd">        :param project_name: Nom du projet</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: resultat de la commande ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; project_id = DB_API.get_project_id_by_project_name()</span>
+<span class="sd">        &gt;&gt;&gt; if project_id and not isinstance(project_id, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(project_id)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_project_id_by_project_name</span><span class="p">,</span> <span class="p">(</span><span class="n">project_name</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_projects_by_user_id</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récuperer tous les projets d&#39;un utilisateur en fonction de son userID.</span>
+
+<span class="sd">        Cette fonction renvoie une liste de tuples comprenant les</span>
+<span class="sd">        projets sous la forme (projectID, name, joined).</span>
+<span class="sd">        Cette fonction peut ne pas fonctionner, dans ce cas elle</span>
+<span class="sd">        renvoie None ou dans certains cas, un objet de type Exception.</span>
+
+<span class="sd">        :param user_id: ID de l&#39;utilisateur</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: resultat de la commande ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; projects = DB_API.get_projects_by_user_id(1)</span>
+<span class="sd">        &gt;&gt;&gt; if projects and not isinstance(projects, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(projects)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_projects_by_user_id</span><span class="p">,</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_tasks_by_project_id</span><span class="p">(</span><span class="n">project_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récuperer toutes les taches d&#39;un projet en fonction de son projectID.</span>
+
+<span class="sd">        Cette fonction renvoie une liste de tuples comprenant les</span>
+<span class="sd">        taches sous la forme (taskID, title, description, status,</span>
+<span class="sd">        priority, covered, assign, dead_line).</span>
+<span class="sd">        Cette fonction peut ne pas fonctionner, dans ce cas elle</span>
+<span class="sd">        renvoie None ou dans certains cas, un objet de type Exception.</span>
+
+<span class="sd">        :param project_id: projectID</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: resultat de la commande ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; tasks = DB_API.get_tasks_by_project_id(1)</span>
+<span class="sd">        &gt;&gt;&gt; if tasks and not isinstance(tasks, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(tasks)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_tasks_by_project_id</span><span class="p">,</span> <span class="p">(</span><span class="n">project_id</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_subtasks_by_task_id</span><span class="p">(</span><span class="n">task_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récuperer toutes les sous taches d&#39;un projet en fonction de son taskID.</span>
+
+<span class="sd">        Cette fonction renvoie une liste de tuples comprenant les</span>
+<span class="sd">        sous taches sous la forme (subtaskID, title, description, status,</span>
+<span class="sd">        priority, covered, assign, dead_line).</span>
+<span class="sd">        Cette fonction peut ne pas fonctionner, dans ce cas elle</span>
+<span class="sd">        renvoie None ou dans certains cas, un objet de type Exception.</span>
+
+<span class="sd">        :param task_id: taskID</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: resultat de la commande ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; subtasks = DB_API.get_subtasks_by_task_id(1)</span>
+<span class="sd">        &gt;&gt;&gt; if subtasks and not isinstance(subtasks, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(subtasks)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_subtasks_by_task_id</span><span class="p">,</span> <span class="p">(</span><span class="n">task_id</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_users_in_project_by_project_id</span><span class="p">(</span><span class="n">project_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récuperer toutes users dans un projet en fonction du projectID.</span>
+
+<span class="sd">        Cette fonction renvoie une liste de tuples comprenant les</span>
+<span class="sd">        projets de l&#39;user sous la forme (userID, username, permission).</span>
+<span class="sd">        Cette fonction peut ne pas fonctionner, dans ce cas elle</span>
+<span class="sd">        renvoie None ou dans certains cas, un objet de type Exception.</span>
+
+<span class="sd">        :param project_id: projectID</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: resultat de la commande ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; users_in_project = DB_API.get_users_in_project_by_project_id(1)</span>
+<span class="sd">        &gt;&gt;&gt; if users_in_project and not isinstance(users_in_project, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(users_in_project)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_users_in_project_by_project_id</span><span class="p">,</span> <span class="p">(</span><span class="n">project_id</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_users_in_tasks_group_by_group_id</span><span class="p">(</span><span class="n">group_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récuperer tous les utilisateurs dans un groupe</span>
+<span class="sd">        de tâches en fonction de son groupID.</span>
+
+<span class="sd">        Cette fonction renvoie une liste de tuples comprenant les</span>
+<span class="sd">        utilisateurs sous la forme (userID, username, task_projectID).</span>
+<span class="sd">        Cette fonction peut ne pas fonctionner, dans ce cas elle</span>
+<span class="sd">        renvoie None ou dans certains cas, un objet de type Exception.</span>
+
+<span class="sd">        :param group_id: groupID</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: resultat de la commande ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; users_in_group = DB_API.get_users_in_tasks_group_by_group_id(1)</span>
+<span class="sd">        &gt;&gt;&gt; if users_in_group and not isinstance(users_in_group, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(users_in_group)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_users_in_tasks_group_by_group_id</span><span class="p">,</span> <span class="p">(</span><span class="n">group_id</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_all_status</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récuperer les statuts de tous les users dans la DB.</span>
+
+<span class="sd">        Cette fonction renvoie une liste de tuples comprenant les</span>
+<span class="sd">        statuts sous la forme (userID, status), note : statut = (0 = deco; 1 = connect; 2 = idle).</span>
+<span class="sd">        Cette fonction peut ne pas fonctionner, dans ce cas elle renvoie un objet</span>
+<span class="sd">        de type Exception.</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: resultat de la commande ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; status = DB_API.get_all_status()</span>
+<span class="sd">        &gt;&gt;&gt; if status and not isinstance(status, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(status)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_all_status</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">add_project</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet d&#39;ajouter un nouveau projet à la DB.</span>
+
+<span class="sd">        Cette fonction renvoie un boolean. En cas d&#39;échec,</span>
+<span class="sd">        elle renverra False et en cas de succes, elle renverra True.</span>
+
+<span class="sd">        :param name: Nom du projet</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; project_id = DB_API.add_project(&quot;project_test&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; if project_id and not isinstance(project_id, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(project_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">add_project</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,))</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">lastrowid</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">add_user_to_group</span><span class="p">(</span>
+        <span class="n">project_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">permission</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">joined</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet d&#39;ajouter un utilisateur à un groupe de projet.</span>
+
+<span class="sd">        Cette fonction renvoie un boolean. En cas d&#39;échec,</span>
+<span class="sd">        elle renverra False et en cas de succes, elle renverra True.</span>
+
+<span class="sd">        :param project_id: ID du projet</span>
+<span class="sd">        :param user_id: ID de l&#39;utilisateur</span>
+<span class="sd">        :param permission: Permission de l&#39;utilisateur dans le projet</span>
+<span class="sd">        (0 = read, 1 = write, 2 = admin)</span>
+<span class="sd">        :param joined: Date d&#39;ajout à la groupe</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; user_group_id = DB_API.add_user_to_group(1, 1, 1, True)</span>
+<span class="sd">        &gt;&gt;&gt; if user_group_id and not isinstance(user_group_id, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(user_group_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">add_user_to_group</span><span class="p">,</span> <span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">permission</span><span class="p">,</span> <span class="n">joined</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">lastrowid</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">add_task_info</span><span class="p">(</span>
+        <span class="n">status</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">dead_line</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span>
+        <span class="n">covered</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">assign</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet d&#39;ajouter des informations sur une tâche.</span>
+
+<span class="sd">        Cette fonction renvoie un boolean. En cas d&#39;échec,</span>
+<span class="sd">        elle renverra False et en cas de succes, elle renverra True.</span>
+
+<span class="sd">        :param status: Statut de la tâche</span>
+<span class="sd">        :param priority: Priorité de la tâche (0 = basse; 1 = moyenne; 2= haute)</span>
+<span class="sd">        :param title: Titre de la tâche</span>
+<span class="sd">        :param description: Description de la tâche</span>
+<span class="sd">        :param dead_line: Date limite de la tâche (datetime.datetime,</span>
+<span class="sd">         le field dans la db est TIMESTAMP)</span>
+<span class="sd">        :param covered: Informations sur la couverture de la tâche (bool)</span>
+<span class="sd">        :param assign: task_projectID (lie la tache a un ou plusieurs</span>
+<span class="sd">         user a travers la table tasks_groups)</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; taskinfo_id = DB_API.add_task_info(1, 2, &quot;titre tache&quot;,</span>
+<span class="sd">        &quot;ceci est une description de la tache&quot;, datetime.datetime.now(), False, 1)</span>
+<span class="sd">        &gt;&gt;&gt; if taskinfo_id and not isinstance(taskinfo_id, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(taskinfo_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+            <span class="n">_Requests</span><span class="o">.</span><span class="n">add_task_info</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">priority</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">dead_line</span><span class="p">,</span> <span class="n">covered</span><span class="p">,</span> <span class="n">assign</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">lastrowid</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">add_task</span><span class="p">(</span>
+        <span class="n">project_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">task_info_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet d&#39;ajouter une tâche à un projet.</span>
+
+<span class="sd">        Cette fonction renvoie un boolean. En cas d&#39;échec,</span>
+<span class="sd">        elle renverra False et en cas de succes, elle renverra True.</span>
+
+<span class="sd">        :param project_id: ID du projet</span>
+<span class="sd">        :param task_info_id: ID des informations de la tâche</span>
+<span class="sd">        :param user_id: ID de l&#39;utilisateur assigné</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; task_id = DB_API.add_task(1, 1, 1)</span>
+<span class="sd">        &gt;&gt;&gt; if task_id and not isinstance(task_id, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(task_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">add_task</span><span class="p">,</span> <span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">task_info_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">lastrowid</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">add_subtask</span><span class="p">(</span>
+        <span class="n">task_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">task_info_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet d&#39;ajouter une sous-tâche à une tâche.</span>
+
+<span class="sd">        Cette fonction renvoie un boolean. En cas d&#39;échec,</span>
+<span class="sd">        elle renverra False et en cas de succes, elle renverra True.</span>
+
+<span class="sd">        :param task_id: ID de la tâche parente</span>
+<span class="sd">        :param task_info_id: ID des informations de la sous-tâche</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; subtask_id = DB_API.add_subtask(1, 1)</span>
+<span class="sd">        &gt;&gt;&gt; if subtask_id and not isinstance(subtask_id, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(subtask_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">add_subtask</span><span class="p">,</span> <span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">task_info_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">lastrowid</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">add_user_to_task_group</span><span class="p">(</span>
+        <span class="n">task_project_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet d&#39;ajouter un utilisateur à un groupe de tâches.</span>
+
+<span class="sd">        Cette fonction renvoie un boolean. En cas d&#39;échec,</span>
+<span class="sd">        elle renverra False et en cas de succes, elle renverra True.</span>
+
+<span class="sd">        :param task_project_id: ID du projet de la tâche</span>
+<span class="sd">        :param user_id: ID de l&#39;utilisateur à ajouter</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; users_tasks_groups_id = DB_API.add_user_to_task_group(1, 1)</span>
+<span class="sd">        &gt;&gt;&gt; if users_tasks_groups_id and not isinstance(users_tasks_groups_id, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(users_tasks_groups_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">add_user_to_task_group</span><span class="p">,</span> <span class="p">(</span><span class="n">task_project_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">lastrowid</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_user_id_by_username</span><span class="p">(</span><span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de recup les projets dans la db.</span>
+
+<span class="sd">        Cette fonction renvoie l&#39;user id.</span>
+<span class="sd">        Cette fonction peut ne pas fonctionner, dans ce cas elle</span>
+<span class="sd">        renvoie None ou dans certains cas, un objet de type Exception.</span>
+
+<span class="sd">        :param username: Username de l&#39;utilisateur</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; user_id = DB_API.get_user_id_by_username(&quot;toto&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; if user_id and not isinstance(user_id, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(f&quot;user_id = {user_id}&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_userID_by_username</span><span class="p">,</span> <span class="p">(</span><span class="n">username</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_all_projects</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de recup les projets dans la db.</span>
+
+<span class="sd">        Cette fonction renvoie une liste de tuples comprenant les</span>
+<span class="sd">        taches sous la forme (projectID, name).</span>
+<span class="sd">        Cette fonction peut ne pas fonctionner, dans ce cas elle</span>
+<span class="sd">        renvoie None ou dans certains cas, un objet de type Exception.</span>
+
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; all_projects = DB_API.get_all_projects()</span>
+<span class="sd">        &gt;&gt;&gt; if all_projects and not isinstance(all_projects, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(f&quot;all_projects = {all_projects}&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_all_projects</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_all_tasks</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de recup toutes les tasks dans la db.</span>
+
+<span class="sd">        Cette fonction renvoie une liste de tuples comprenant les</span>
+<span class="sd">        taches sous la forme (taskID, title, description, status,</span>
+<span class="sd">        priority, covered, assign, dead_line).</span>
+<span class="sd">        Cette fonction peut ne pas fonctionner, dans ce cas elle</span>
+<span class="sd">        renvoie None ou dans certains cas, un objet de type Exception.</span>
+
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; all_tasks = DB_API.get_all_tasks()</span>
+<span class="sd">        &gt;&gt;&gt; if all_tasks and not isinstance(all_tasks, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(f&quot;all_tasks = {all_tasks}&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_all_tasks</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_user_email</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de recup l&#39;email de l&#39;userid dans la db.</span>
+
+<span class="sd">        Cette fonction renvoie un tuple ou None, une exception de façon rare.</span>
+<span class="sd">        En cas d&#39;échec, elle renverra une exc et en cas de succes,</span>
+<span class="sd">        elle renverra le mail de l&#39;user dans un tuple.</span>
+
+<span class="sd">        :param user_id: L&#39;id de l&#39;user</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; email = DB_API.get_user_email(2)</span>
+<span class="sd">        &gt;&gt;&gt; if email and not isinstance(email, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(f&quot;email = {email}&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_user_email</span><span class="p">,</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_email</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récupérer l&#39;email d&#39;un utilisateur.</span>
+
+<span class="sd">        Cette fonction renvoie un tuple représentant l&#39;email ou une exception</span>
+<span class="sd">        en cas d&#39;erreur.</span>
+
+<span class="sd">        :param email: Email de l&#39;utilisateur</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; email_info = DB_API.get_email(&quot;exemple@domain.com&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; if email_info and not isinstance(email_info, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(email_info)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_email</span><span class="p">,</span> <span class="p">(</span><span class="n">email</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récupérer les informations d&#39;un utilisateur en fonction</span>
+<span class="sd">        de son nom d&#39;utilisateur.</span>
+
+<span class="sd">        Cette fonction renvoie un tuple représentant les informations de</span>
+<span class="sd">        l&#39;utilisateur ou une exception en cas d&#39;erreur.</span>
+
+<span class="sd">        :param username: Nom d&#39;utilisateur</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; user_info = DB_API.get_user(&quot;nom_utilisateur&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; if user_info and not isinstance(user_info, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(user_info)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_user</span><span class="p">,</span> <span class="p">(</span><span class="n">username</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_userID_by_email</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récupérer l&#39;ID d&#39;un utilisateur en fonction de son email.</span>
+
+<span class="sd">        Cette fonction renvoie un tuple représentant l&#39;ID de l&#39;utilisateur</span>
+<span class="sd">        ou une exception en cas d&#39;erreur.</span>
+
+<span class="sd">        :param email: Email de l&#39;utilisateur</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; user_id = DB_API.get_userID_by_email(&quot;exemple@domain.com&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; if user_id and not isinstance(user_id, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(user_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_userID_by_email</span><span class="p">,</span> <span class="p">(</span><span class="n">email</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">add_user_status</span><span class="p">(</span>
+        <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ajoute un statut pour un utilisateur dans la base de données.</span>
+
+<span class="sd">        Cette fonction exécute une requête pour ajouter un statut à un utilisateur</span>
+<span class="sd">        en fonction de son ID. En cas de succès, elle renvoie l&#39;ID du statut ajouté.</span>
+<span class="sd">        En cas d&#39;échec, elle renvoie une exception.</span>
+
+<span class="sd">        :param user_id: ID de l&#39;utilisateur</span>
+<span class="sd">        :param status: Statut à ajouter (0 = déconnecté, 1 = connecté, 2 = inactif)</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: ID du statut ajouté en cas de succès, ou une exception en cas d&#39;échec</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; status_id = DB_API.add_user_status(1, 0)</span>
+<span class="sd">        &gt;&gt;&gt; if not isinstance(status_id, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(f&quot;Statut ajouté avec l&#39;ID: {status_id}&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">add_user_status</span><span class="p">,</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">status</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">lastrowid</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">add_task_group</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet d&#39;ajouter un groupe de tâches dans la base de données.</span>
+
+<span class="sd">        Cette fonction renvoie l&#39;ID du groupe de tâches ou une exception en</span>
+<span class="sd">        cas d&#39;échec.</span>
+
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; task_group_id = DB_API.add_task_group()</span>
+<span class="sd">        &gt;&gt;&gt; if task_group_id and not isinstance(task_group_id, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(f&quot;ID du groupe de tâches = {task_group_id}&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">add_task_group</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">lastrowid</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">delete_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de supprimer un utilisateur de la base de données.</span>
+
+<span class="sd">        Cette fonction renvoie None en cas de succès ou une exception en cas</span>
+<span class="sd">        d&#39;échec.</span>
+
+<span class="sd">        :param user_id: ID de l&#39;utilisateur à supprimer</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; err = DB_API.delete_user(1)</span>
+<span class="sd">        &gt;&gt;&gt; if not isinstance(err, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Utilisateur supprimé avec succès&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">delete_user</span><span class="p">,</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_project_in_users_groups_userid</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récupérer tous les projets où l&#39;utilisateur est invité</span>
+<span class="sd">        (accepté ou non).</span>
+
+<span class="sd">        Cette fonction renvoie une liste de tuples représentant les projets</span>
+<span class="sd">        ou une exception en cas d&#39;erreur.</span>
+
+<span class="sd">        :param user_id: ID de l&#39;utilisateur</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; projects = DB_API.get_project_in_users_groups_userid(10)</span>
+<span class="sd">        &gt;&gt;&gt; if projects and not isinstance(projects, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(projects)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_project_in_users_groups</span><span class="p">,</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">delete_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de supprimer une tâche de la base de données et toutes ses</span>
+<span class="sd">        dépendances.</span>
+
+<span class="sd">        Cette fonction renvoie None en cas de succès ou une exception en</span>
+<span class="sd">        cas d&#39;échec.</span>
+
+<span class="sd">        :param task_id: ID de la tâche à supprimer</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; err = DB_API.delete_task(1)</span>
+<span class="sd">        &gt;&gt;&gt; if not isinstance(err, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Tâche supprimée avec succès&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">delete_task</span><span class="p">,</span> <span class="p">(</span><span class="n">task_id</span><span class="p">,))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">set_invites_status</span><span class="p">(</span>
+        <span class="n">project_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">joined</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet d&#39;accepter ou refuser une invitation vers un projet.</span>
+<span class="sd">        Cette fonction renvoie None ou une exception. En cas d&#39;échec,</span>
+<span class="sd">        elle renverra une exc et en cas de succes, elle renverra None.</span>
+<span class="sd">        :param project_id: Le project_ID</span>
+<span class="sd">        :param user_id: ID de l&#39;utilisateur</span>
+<span class="sd">        :param joined: Accepter ou pas l&#39;invit</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; err = DB_API.set_invites_status(1, 1, False)</span>
+<span class="sd">        &gt;&gt;&gt; if not isinstance(err, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;modifié avec succes&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">set_invites_status</span><span class="p">,</span> <span class="p">(</span><span class="n">joined</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">set_user_permission</span><span class="p">(</span>
+        <span class="n">project_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">permission</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de changer les permissions d&#39;un user dans le projet.</span>
+<span class="sd">        Cette fonction renvoie None ou une exception. En cas d&#39;échec,</span>
+<span class="sd">        elle renverra une exc et en cas de succes, elle renverra None.</span>
+<span class="sd">        :param project_id: Le project_ID</span>
+<span class="sd">        :param user_id: ID de l&#39;utilisateur</span>
+<span class="sd">        :param permission: Permission de l&#39;utilisateur dans le projet</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; err = DB_API.set_user_permission(1, 1, 2)</span>
+<span class="sd">        &gt;&gt;&gt; if not isinstance(err, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;modifié avec succes&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">update_user_perm</span><span class="p">,</span> <span class="p">(</span><span class="n">permission</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">set_user_status</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de modifier le status de l&#39;utilisateur.</span>
+<span class="sd">        Cette fonction renvoie None ou une exception. En cas d&#39;échec,</span>
+<span class="sd">        elle renverra une exc et en cas de succes, elle renverra None.</span>
+<span class="sd">        :param user_id: ID de l&#39;utilisateur</span>
+<span class="sd">        :param status: Status de l&#39;utilisateur</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB</span>
+<span class="sd">        (optionnel, géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; err = DB_API.set_user_status(1, 0)</span>
+<span class="sd">        &gt;&gt;&gt; if not isinstance(err, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;delete avec succes&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">update_user_status</span><span class="p">,</span> <span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">user_id</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_totp_secret</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Récupère la clé secrète TOTP d&#39;un utilisateur en fonction de son email.</span>
+
+<span class="sd">        Cette fonction renvoie la clé secrète TOTP ou None en cas d&#39;échec.</span>
+
+<span class="sd">        :param email: Email de l&#39;utilisateur</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: Clé secrète TOTP ou None</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; totp_secret = DB_API.get_totp_secret(&quot;email@example.com&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; if totp_secret:</span>
+<span class="sd">        &gt;&gt;&gt;     print(f&quot;Clé secrète TOTP: {totp_secret}&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_totp_secret</span><span class="p">,</span> <span class="p">(</span><span class="n">email</span><span class="p">,))</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">row</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># la clé</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_user_permission</span><span class="p">(</span><span class="n">project_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récupérer les permissions d&#39;un utilisateur dans un projet.</span>
+
+<span class="sd">        Cette fonction renvoie un tuple comprenant les permissions de l&#39;utilisateur.</span>
+<span class="sd">        En cas d&#39;échec, elle renverra une exception.</span>
+
+<span class="sd">        :param project_id: ID du projet</span>
+<span class="sd">        :param user_id: ID de l&#39;utilisateur</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: Permissions de l&#39;utilisateur ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; permissions = DB_API.get_user_permission(1, 1)</span>
+<span class="sd">        &gt;&gt;&gt; if permissions and not isinstance(permissions, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(permissions)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">get_user_permission</span><span class="p">,</span> <span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">set_totp_secret</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">secret</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Définit la clé TOTP pour un utilisateur donné par son email.</span>
+
+<span class="sd">        Cette fonction renvoie True en cas de succès ou False en cas d&#39;échec.</span>
+
+<span class="sd">        :param email: Email de l&#39;utilisateur</span>
+<span class="sd">        :param secret: Clé TOTP à définir</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: True si la clé TOTP a été définie avec succès, False sinon</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; success = DB_API.set_totp_secret(&quot;email@example.com&quot;, &quot;secret_key&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; if success:</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Clé TOTP définie avec succès&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">set_totp_secret</span><span class="p">,</span> <span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="n">email</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">delete_project</span><span class="p">(</span><span class="n">project_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de supprimer un projet de la base de données.</span>
+
+<span class="sd">        Cette fonction renvoie None en cas de succès ou une exception en cas d&#39;échec.</span>
+
+<span class="sd">        :param project_id: ID du projet à supprimer</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: None ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; err = DB_API.delete_project(1)</span>
+<span class="sd">        &gt;&gt;&gt; if not isinstance(err, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Projet supprimé avec succès&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">delete_project</span><span class="p">,</span> <span class="p">(</span><span class="n">project_id</span><span class="p">,))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_task_info_by_task_id</span><span class="p">(</span><span class="n">taskID</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récupérer les informations d&#39;une tâche en fonction de son ID.</span>
+
+<span class="sd">        Cette fonction renvoie un tuple comprenant les informations de la tâche.</span>
+<span class="sd">        En cas d&#39;échec, elle renverra une exception.</span>
+
+<span class="sd">        :param taskID: ID de la tâche</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: Informations de la tâche ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; task_info = DB_API.get_task_info_by_task_id(1)</span>
+<span class="sd">        &gt;&gt;&gt; if task_info and not isinstance(task_info, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(task_info)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">_Requests</span><span class="o">.</span><span class="n">get_task_info_by_task_id</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">taskID</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">get_subtask_info_by_subtask_id</span><span class="p">(</span><span class="n">subtaskID</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de récupérer les informations d&#39;une sous-tâche en fonction de son ID.</span>
+
+<span class="sd">        Cette fonction renvoie un tuple comprenant les informations de la sous-tâche.</span>
+<span class="sd">        En cas d&#39;échec, elle renverra une exception.</span>
+
+<span class="sd">        :param subtaskID: ID de la sous-tâche</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: Informations de la sous-tâche ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; subtask_info = DB_API.get_subtask_info_by_subtask_id(1)</span>
+<span class="sd">        &gt;&gt;&gt; if subtask_info and not isinstance(subtask_info, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(subtask_info)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">_Requests</span><span class="o">.</span><span class="n">get_subtask_info_by_subtask_id</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">subtaskID</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">delete_user_group</span><span class="p">(</span><span class="n">project_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de supprimer un groupe d&#39;utilisateurs d&#39;un projet.</span>
+
+<span class="sd">        Cette fonction renvoie None en cas de succès ou une exception en cas d&#39;échec.</span>
+
+<span class="sd">        :param project_id: ID du projet</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: None ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; err = DB_API.delete_user_group(1)</span>
+<span class="sd">        &gt;&gt;&gt; if not isinstance(err, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Groupe d&#39;utilisateurs supprimé avec succès&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">delete_users_groups</span><span class="p">,</span> <span class="p">(</span><span class="n">project_id</span><span class="p">,))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">delete_tasks_groups</span><span class="p">(</span><span class="n">project_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de supprimer tous les groupes de tâches d&#39;un projet.</span>
+
+<span class="sd">        Cette fonction renvoie None en cas de succès ou une exception en cas d&#39;échec.</span>
+
+<span class="sd">        :param project_id: ID du projet</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: None ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; err = DB_API.delete_tasks_groups(1)</span>
+<span class="sd">        &gt;&gt;&gt; if not isinstance(err, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Groupes de tâches supprimés avec succès&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">delete_tasks_groups</span><span class="p">,</span> <span class="p">(</span><span class="n">project_id</span><span class="p">,))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">delete_tasks_infos</span><span class="p">(</span><span class="n">project_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de supprimer toutes les informations de tâches d&#39;un projet.</span>
+
+<span class="sd">        Cette fonction renvoie None en cas de succès ou une exception en cas d&#39;échec.</span>
+
+<span class="sd">        :param project_id: ID du projet</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: None ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; err = DB_API.delete_tasks_infos(1)</span>
+<span class="sd">        &gt;&gt;&gt; if not isinstance(err, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Informations de tâches supprimées avec succès&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">delete_tasks_infos</span><span class="p">,</span> <span class="p">(</span><span class="n">project_id</span><span class="p">,))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">delete_tasks</span><span class="p">(</span><span class="n">project_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Permet de supprimer toutes les tâches d&#39;un projet.</span>
+
+<span class="sd">        Cette fonction renvoie None en cas de succès ou une exception en cas d&#39;échec.</span>
+
+<span class="sd">        :param project_id: ID du projet</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: None ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; err = DB_API.delete_tasks(1)</span>
+<span class="sd">        &gt;&gt;&gt; if not isinstance(err, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Tâches supprimées avec succès&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">delete_tasks</span><span class="p">,</span> <span class="p">(</span><span class="n">project_id</span><span class="p">,))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">check_projects</span><span class="p">(</span><span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Vérifie si un projet existe dans la base de données en fonction de son nom.</span>
+
+<span class="sd">        Cette fonction renvoie True si le projet existe, False sinon.</span>
+
+<span class="sd">        :param project_name: Nom du projet</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: True si le projet existe, False sinon</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; exists = DB_API.check_projects(&quot;Nom du Projet&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; if exists:</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Le projet existe&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">check_projects</span><span class="p">,</span> <span class="p">(</span><span class="n">project_name</span><span class="p">,))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="kc">False</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">delete_users_from_users_tasks_groups</span><span class="p">(</span>
+        <span class="n">task_group_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Supprime les utilisateurs d&#39;un groupe de tâches.</span>
+
+<span class="sd">        Cette fonction renvoie None en cas de succès ou une exception en cas d&#39;échec.</span>
+
+<span class="sd">        :param task_group_id: ID du groupe de tâches</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: None ou exception</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; err = DB_API.delete_users_from_users_tasks_groups(1)</span>
+<span class="sd">        &gt;&gt;&gt; if not isinstance(err, Exception):</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Utilisateurs supprimés du groupe de tâches avec succès&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">delete_users_from_users_tasks_groups</span><span class="p">,</span> <span class="p">(</span><span class="n">task_group_id</span><span class="p">,))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">update_task_status</span><span class="p">(</span><span class="n">task_info_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Met à jour le statut de la tâche dans la table tasks_infos.</span>
+
+<span class="sd">        Cette fonction renvoie True en cas de succès ou False en cas d&#39;échec.</span>
+
+<span class="sd">        :param task_info_id: ID des informations de la tâche</span>
+<span class="sd">        :param status: Nouveau statut de la tâche</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: True si le statut a été mis à jour avec succès, False sinon</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; success = DB_API.update_task_status(1, 0)</span>
+<span class="sd">        &gt;&gt;&gt; if success:</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Statut de la tâche mis à jour avec succès&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_Requests</span><span class="o">.</span><span class="n">update_task_status</span><span class="p">,</span> <span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">task_info_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">rowcount</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">update_task_title</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task_info_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Met à jour le titre d&#39;une tâche dans la table tasks_infos.</span>
+
+<span class="sd">        Cette fonction renvoie True en cas de succès ou False en cas d&#39;échec.</span>
+
+<span class="sd">        :param task_info_id: ID des informations de la tâche</span>
+<span class="sd">        :param title: Nouveau titre de la tâche</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: True si le titre a été mis à jour avec succès, False sinon</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; success = DB_API.update_task_title(&quot;Nouveau Titre&quot;, 1)</span>
+<span class="sd">        &gt;&gt;&gt; if success:</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Titre de la tâche mis à jour avec succès&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">_Requests</span><span class="o">.</span><span class="n">update_task_title</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">task_info_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">rowcount</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">update_task_description</span><span class="p">(</span>
+        <span class="n">description</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task_info_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Met à jour la description de la tâche dans la table tasks_infos.</span>
+
+<span class="sd">        Cette fonction renvoie True en cas de succès ou False en cas d&#39;échec.</span>
+
+<span class="sd">        :param description: Nouvelle description de la tâche</span>
+<span class="sd">        :param task_info_id: ID des informations de la tâche</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: True si la description a été mise à jour avec succès, False sinon</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; success = DB_API.update_task_description(&quot;Nouvelle description&quot;, 1)</span>
+<span class="sd">        &gt;&gt;&gt; if success:</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Description de la tâche mise à jour avec succès&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">_Requests</span><span class="o">.</span><span class="n">update_task_description</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="n">task_info_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">rowcount</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">update_task_priority</span><span class="p">(</span><span class="n">priority</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">task_info_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Met à jour la priorité d&#39;une tâche dans la table tasks_infos.</span>
+
+<span class="sd">        Cette fonction renvoie True en cas de succès ou False en cas d&#39;échec.</span>
+
+<span class="sd">        :param task_info_id: ID des informations de la tâche</span>
+<span class="sd">        :param priority: Nouvelle priorité de la tâche</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: True si la priorité a été mise à jour avec succès, False sinon</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; success = DB_API.update_task_priority(1, 2)</span>
+<span class="sd">        &gt;&gt;&gt; if success:</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Priorité de la tâche mise à jour avec succès&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">_Requests</span><span class="o">.</span><span class="n">update_task_priority</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">priority</span><span class="p">,</span> <span class="n">task_info_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">rowcount</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@cm_conn</span><span class="p">()</span>
+    <span class="nd">@cm_cursor</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">update_task_date</span><span class="p">(</span><span class="n">date</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">task_info_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">MySQLCursor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Met à jour la date limite d&#39;une tâche dans la table tasks_infos.</span>
+
+<span class="sd">        Cette fonction renvoie True en cas de succès ou False en cas d&#39;échec.</span>
+
+<span class="sd">        :param date: Nouvelle date limite de la tâche</span>
+<span class="sd">        :param task_info_id: ID des informations de la tâche</span>
+<span class="sd">        :param cursor: Curseur d&#39;une connexion vers une DB (optionnel,</span>
+<span class="sd">        géré automatiquement par le décorateur cm_cursor())</span>
+<span class="sd">        :return: True si la date a été mise à jour avec succès, False sinon</span>
+
+<span class="sd">        Exemple:</span>
+<span class="sd">        &gt;&gt;&gt; success = DB_API.update_task_date(1, datetime.datetime.now())</span>
+<span class="sd">        &gt;&gt;&gt; if success:</span>
+<span class="sd">        &gt;&gt;&gt;     print(&quot;Date de la tâche mise à jour avec succès&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">_Requests</span><span class="o">.</span><span class="n">update_task_date</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">task_info_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">rowcount</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># print(DB_API.add_project(&#39;tebgfbgrsbs&#39;))</span>
+    <span class="c1"># t = (DB_API.add_user(username=&quot;vlad&quot;, password=&quot;trql&quot;,</span>
+    <span class="c1"># email=&quot;email@vlad.com&quot;, is_google_user=False))</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">get_all_infos_from_email</span><span class="p">(</span><span class="s2">&quot;miaw@redgally.xyz&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">t</span><span class="p">)</span>
+    <span class="k">pass</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Auteur.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+DB_USER = "379290_user"
+DB_PASSWORD = "&Y37tMHYrC9J&G7SC7R4mRS?6KBBHD8c!HQ6!4n5"
+DB_DATABASE = "taskflowsae_db"
+DB_HOST = "mysql-taskflowsae.alwaysdata.net"
+CLIENT_ID = "428963010703-4ehn75nf048kk43mmjpqksvva1d01qk8.apps.googleusercontent.com"
+CLIENT_SECRET = "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"
+REDIRECT_URI = "http://localhost:5001/oauth2callback"
+TOKEN_URL = "https://oauth2.googleapis.com/token"
+SCOPES = ["https://www.googleapis.com/auth/gmail.send"]

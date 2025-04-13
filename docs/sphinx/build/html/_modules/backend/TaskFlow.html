@@ -1,0 +1,431 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>backend.TaskFlow &mdash; SAE502-TaskFlow 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            SAE502-TaskFlow
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table des matières</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../backend.html">Backend Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../frontend.html">Frontend Modules</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SAE502-TaskFlow</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">backend.TaskFlow</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for backend.TaskFlow</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">smtplib</span>
+<span class="kn">from</span> <span class="nn">email.mime.text</span> <span class="kn">import</span> <span class="n">MIMEText</span>
+<span class="kn">from</span> <span class="nn">email.mime.multipart</span> <span class="kn">import</span> <span class="n">MIMEMultipart</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">backend.db_api</span> <span class="kn">import</span> <span class="n">DB_API</span>
+
+<span class="n">accounts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;taskflowreminder1@gmail.com&quot;</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;bgnt irxw fblu vemb&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;taskflowreminder2@gmail.com&quot;</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;lkya wtsu opzy pnse&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;taskflowreminder3@gmail.com&quot;</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;jjnw nuhq eopy azfw&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+<span class="n">current_account_index</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<div class="viewcode-block" id="send_email">
+<a class="viewcode-back" href="../../backend.html#backend.TaskFlow.send_email">[docs]</a>
+<span class="k">def</span> <span class="nf">send_email</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">to</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Envoie un email à un destinataire avec un sujet et un corps donnés.</span>
+
+<span class="sd">        Cette fonction utilise un compte de messagerie parmi ceux définis dans la liste `accounts`.</span>
+<span class="sd">        Elle sélectionne le compte suivant dans la liste à chaque envoi, en utilisant un mécanisme de rotation.</span>
+
+<span class="sd">        :param subject: Sujet de l&#39;email.</span>
+<span class="sd">        :param body: Corps de l&#39;email.</span>
+<span class="sd">        :param to: Adresse email du destinataire.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">current_account_index</span>
+    <span class="n">account</span> <span class="o">=</span> <span class="n">accounts</span><span class="p">[</span><span class="n">current_account_index</span><span class="p">]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">smtplib</span><span class="o">.</span><span class="n">SMTP</span><span class="p">(</span><span class="s2">&quot;smtp.gmail.com&quot;</span><span class="p">,</span> <span class="mi">587</span><span class="p">)</span> <span class="k">as</span> <span class="n">server</span><span class="p">:</span>
+            <span class="n">server</span><span class="o">.</span><span class="n">starttls</span><span class="p">()</span>
+            <span class="n">server</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">account</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">],</span> <span class="n">account</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">])</span>
+
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">MIMEMultipart</span><span class="p">()</span>
+            <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;From&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">account</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span>
+            <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;To&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">to</span>
+            <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;Subject&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subject</span>
+
+            <span class="n">msg</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">MIMEText</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s2">&quot;plain&quot;</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+
+            <span class="n">server</span><span class="o">.</span><span class="n">sendmail</span><span class="p">(</span><span class="n">account</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">],</span> <span class="n">to</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">as_string</span><span class="p">())</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Email envoyé à </span><span class="si">{</span><span class="n">to</span><span class="si">}</span><span class="s1"> avec succès depuis </span><span class="si">{</span><span class="n">account</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+            <span class="n">current_account_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_account_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">accounts</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur lors de l&#39;envoi de l&#39;email: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="invite_user_to_project">
+<a class="viewcode-back" href="../../backend.html#backend.TaskFlow.invite_user_to_project">[docs]</a>
+<span class="k">def</span> <span class="nf">invite_user_to_project</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">project_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Invite un utilisateur à rejoindre un projet.</span>
+
+<span class="sd">        Cette fonction récupère l&#39;ID du projet et de l&#39;utilisateur dans la base de données,</span>
+<span class="sd">        puis envoie un email d&#39;invitation à l&#39;utilisateur avec les détails du projet.</span>
+
+<span class="sd">        :param username: Nom d&#39;utilisateur de l&#39;utilisateur à inviter.</span>
+<span class="sd">        :param project_name: Nom du projet auquel l&#39;utilisateur est invité.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">get_project_id_by_project_name</span><span class="p">(</span><span class="n">project_name</span><span class="p">)</span>
+    <span class="n">userID</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">get_user_id_by_username</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">get_user_email</span><span class="p">(</span><span class="n">userID</span><span class="p">)</span>
+    <span class="n">permission</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">joined</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">email</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">project</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Projet &#39;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">&#39; introuvable.&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">userID</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Utilisateur &#39;</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2">&#39; introuvable.&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="n">subject</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Invitation à rejoindre le projet &quot;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s1">&#39;Bonjour,</span><span class="se">\n\n</span><span class="s1">Vous avez été invité à rejoindre le projet &quot;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+        <span class="sa">f</span><span class="s2">&quot;.</span><span class="se">\n\n\n</span><span class="s2">Cordialement,</span><span class="se">\n</span><span class="s2">L&#39;équipe de gestion de projet.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">send_email</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">email</span><span class="p">)</span>
+    <span class="n">DB_API</span><span class="o">.</span><span class="n">add_user_to_group</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">userID</span><span class="p">,</span> <span class="n">permission</span><span class="p">,</span> <span class="n">joined</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="check_tasks">
+<a class="viewcode-back" href="../../backend.html#backend.TaskFlow.check_tasks">[docs]</a>
+<span class="k">def</span> <span class="nf">check_tasks</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Vérifie les tâches en fonction de leur date d&#39;échéance et envoie des rappels par email.</span>
+
+<span class="sd">        Cette fonction vérifie les tâches dans la base de données pour déterminer si leur date limite est passée ou approche.</span>
+<span class="sd">        Si la tâche est en retard, un email est envoyé à l&#39;utilisateur assigné. Si la date limite approche, un rappel est envoyé.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Vérification des tâches à </span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y %H:%M&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">...&#39;</span><span class="p">)</span>
+
+    <span class="n">tasks</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">get_all_tasks</span><span class="p">()</span>
+    <span class="n">colonnes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;taskID&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;status&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;priority&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;covered&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;assign&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;due_date&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">task_tuple</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">colonnes</span><span class="p">,</span> <span class="n">task_tuple</span><span class="p">))</span>
+        <span class="n">due_date</span> <span class="o">=</span> <span class="n">task</span><span class="p">[</span><span class="s2">&quot;due_date&quot;</span><span class="p">]</span>
+        <span class="n">time_remaining</span> <span class="o">=</span> <span class="p">(</span><span class="n">due_date</span> <span class="o">-</span> <span class="n">now</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+        <span class="n">user_emails</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">get_emails_by_task_project_id</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;assign&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">time_remaining</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">user_email</span> <span class="ow">in</span> <span class="n">user_emails</span><span class="p">:</span>
+                <span class="n">subject</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Tâche en retard : </span><span class="si">{</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">body</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;Bonjour,</span>
+
+<span class="s2">        La tâche &quot;</span><span class="si">{</span><span class="n">task</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot; est en retard. Veuillez la terminer dans les meilleurs délais.</span>
+
+<span class="s2">        Cordialement,</span>
+<span class="s2">        L&#39;équipe de gestion de projet.&quot;&quot;&quot;</span>
+                <span class="n">send_email</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">user_email</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Email envoyé à </span><span class="si">{</span><span class="n">user_email</span><span class="si">}</span><span class="s2"> concernant une tâche en retard.&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">time_remaining</span> <span class="o">&lt;</span> <span class="mi">86400</span><span class="p">:</span>  <span class="c1"># Moins de 24 heures</span>
+            <span class="k">for</span> <span class="n">user_email</span> <span class="ow">in</span> <span class="n">user_emails</span><span class="p">:</span>
+                <span class="n">subject</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Rappel : La date limite approche pour &quot;</span><span class="si">{</span><span class="n">task</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+                <span class="n">body</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;Bonjour,</span>
+
+<span class="s2">        N&#39;oubliez pas que la tâche &quot;</span><span class="si">{</span><span class="n">task</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="s2">        doit être terminée avant le </span><span class="si">{</span><span class="n">due_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">/%m/%Y %H:%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span>
+
+<span class="s2">        Cordialement,</span>
+<span class="s2">        L&#39;équipe de gestion de projet.&quot;&quot;&quot;</span>
+                <span class="n">send_email</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">user_email</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rappel envoyé à </span><span class="si">{</span><span class="n">user_email</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../backend.html#backend.TaskFlow.main">[docs]</a>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Affiche un menu principal et permet d&#39;exécuter diverses actions, telles que la gestion des utilisateurs, projets et tâches.</span>
+
+<span class="sd">        Cette fonction propose à l&#39;utilisateur un menu interactif pour créer des utilisateurs et des projets, inviter des utilisateurs,</span>
+<span class="sd">        ajouter des tâches, vérifier les tâches en retard ou envoyant des rappels.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Menu principal :&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. Créer un utilisateur&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2. Créer un projet&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3. Inviter un utilisateur à un projet&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;4. Ajouter une tâche&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;5. Lister les projets&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;6. Lister les tâches d&#39;un projet&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;7. Vérifier les tâches (envoyer des rappels)&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;8. Quitter&quot;</span><span class="p">)</span>
+        <span class="n">choice</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Choisissez une option : &quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+            <span class="n">username</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Nom d&#39;utilisateur : &quot;</span><span class="p">)</span>
+            <span class="n">email</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Adresse e-mail : &quot;</span><span class="p">)</span>
+            <span class="n">password</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Mot de passe : &quot;</span><span class="p">)</span>
+            <span class="n">gmail</span> <span class="o">=</span> <span class="s2">&quot;@gmail&quot;</span>
+            <span class="k">if</span> <span class="n">gmail</span> <span class="ow">in</span> <span class="n">email</span><span class="p">:</span>
+                <span class="n">is_google_user</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">is_google_user</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">DB_API</span><span class="o">.</span><span class="n">add_user</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">is_google_user</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Utilisateur </span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2"> créé avec succès.&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;2&quot;</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Nom du projet : &quot;</span><span class="p">)</span>
+            <span class="n">DB_API</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Projet &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; créé avec succès.&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;3&quot;</span><span class="p">:</span>
+            <span class="n">username</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Nom de l&#39;utilisateur : &quot;</span><span class="p">)</span>
+            <span class="n">project_name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Nom du projet : &quot;</span><span class="p">)</span>
+            <span class="n">invite_user_to_project</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">project_name</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;4&quot;</span><span class="p">:</span>
+            <span class="n">project_name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Nom du projet : &quot;</span><span class="p">)</span>
+            <span class="n">task_title</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Titre de la tâche : &quot;</span><span class="p">)</span>
+            <span class="n">priority</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Priorité (Haute, Moyenne, Basse) : &quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">priority</span> <span class="o">==</span> <span class="s2">&quot;Haute&quot;</span><span class="p">:</span>
+                <span class="n">priority</span> <span class="o">=</span> <span class="mi">3</span>
+            <span class="k">elif</span> <span class="n">priority</span> <span class="o">==</span> <span class="s2">&quot;Moyenne&quot;</span><span class="p">:</span>
+                <span class="n">priority</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="k">elif</span> <span class="n">priority</span> <span class="o">==</span> <span class="s2">&quot;Basse&quot;</span><span class="p">:</span>
+                <span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;erreur&quot;</span><span class="p">)</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Description : &quot;</span><span class="p">)</span>
+            <span class="n">due_date_str</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Date d&#39;échéance (YYYY-MM-DD HH:MM) : &quot;</span><span class="p">)</span>
+            <span class="n">username</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Utilisateur assigné : &quot;</span><span class="p">)</span>
+            <span class="n">userID</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">get_user_id_by_username</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+            <span class="n">task_projectID</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">add_task_group</span><span class="p">()</span>
+            <span class="n">DB_API</span><span class="o">.</span><span class="n">add_user_to_task_group</span><span class="p">(</span><span class="n">task_projectID</span><span class="p">,</span> <span class="n">userID</span><span class="p">)</span>
+            <span class="n">covered</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">due_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">due_date_str</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M&quot;</span><span class="p">)</span>
+            <span class="n">project</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">get_project_id_by_project_name</span><span class="p">(</span><span class="n">project_name</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">project</span><span class="p">:</span>
+                <span class="n">task_infoID</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">add_task_info</span><span class="p">(</span>
+                    <span class="n">status</span><span class="p">,</span> <span class="n">priority</span><span class="p">,</span> <span class="n">task_title</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">due_date</span><span class="p">,</span> <span class="n">covered</span><span class="p">,</span> <span class="n">task_projectID</span>
+                <span class="p">)</span>
+                <span class="n">DB_API</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">task_infoID</span><span class="p">,</span> <span class="n">userID</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tâche &#39;</span><span class="si">{</span><span class="n">task_title</span><span class="si">}</span><span class="s2">&#39; ajoutée au projet &#39;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Projet &#39;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">&#39; introuvable.&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;5&quot;</span><span class="p">:</span>
+            <span class="n">projects</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">get_all_projects</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">project</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">projects</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">project</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;6&quot;</span><span class="p">:</span>
+            <span class="n">project_name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Nom du projet : &quot;</span><span class="p">)</span>
+            <span class="n">project</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">get_project_id_by_project_name</span><span class="p">(</span><span class="n">project_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">project</span><span class="p">:</span>
+                <span class="n">tasks</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">get_tasks_by_project_id</span><span class="p">(</span><span class="n">project</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">task</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tasks</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">task</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">task</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">task</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Projet &#39;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">&#39; introuvable.&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;7&quot;</span><span class="p">:</span>
+            <span class="n">check_tasks</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;8&quot;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Au revoir !&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Option invalide. Veuillez réessayer.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="delete_user">
+<a class="viewcode-back" href="../../backend.html#backend.TaskFlow.delete_user">[docs]</a>
+<span class="k">def</span> <span class="nf">delete_user</span><span class="p">(</span><span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Permet de delete un utilisateur de la db et toutes ses dépendances.</span>
+
+<span class="sd">    Cette fonction renvoie un boolean. En cas d&#39;échec,</span>
+<span class="sd">    elle renverra False et en cas de succes, elle renverra True.</span>
+
+<span class="sd">    :param username: Username de l&#39;utilisateur</span>
+<span class="sd">    :param user_id: ID de l&#39;utilisateur (optionnel)</span>
+
+<span class="sd">    Exemple:</span>
+<span class="sd">    &gt;&gt;&gt; err = delete_user(&quot;toto&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; if err:</span>
+<span class="sd">    &gt;&gt;&gt;     print(&quot;supprimé avec succes&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; err = delete_user(user_id=4)</span>
+<span class="sd">    &gt;&gt;&gt; if err:</span>
+<span class="sd">    &gt;&gt;&gt;     print(&quot;supprimé avec succes&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">user_id</span><span class="p">:</span>
+        <span class="n">user_id</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">get_user_id_by_username</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">delete_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+
+<div class="viewcode-block" id="update_task_info">
+<a class="viewcode-back" href="../../backend.html#backend.TaskFlow.update_task_info">[docs]</a>
+<span class="k">def</span> <span class="nf">update_task_info</span><span class="p">(</span>
+    <span class="n">task_info_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">status</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># noqa</span>
+    <span class="n">priority</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># noqa</span>
+    <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># noqa</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># noqa</span>
+    <span class="n">dead_line</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># noqa</span>
+    <span class="n">covered</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># noqa</span>
+    <span class="n">assign</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># noqa</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Met à jour une tâche dans la table tasks_infos.</span>
+
+<span class="sd">    Cette fonction renvoie un boolean. En cas d&#39;échec,</span>
+<span class="sd">    elle renverra False et en cas de succes, elle renverra True.</span>
+
+<span class="sd">    :param task_info_id: ID de la tâche à modifier.</span>
+<span class="sd">    :param status: (optionnel) Nouveau statut de la tâche.</span>
+<span class="sd">    :param priority: (optionnel) Nouvelle priorité de la tâche.</span>
+<span class="sd">    :param title: (optionnel) Nouveau titre de la tâche.</span>
+<span class="sd">    :param description: (optionnel) Nouvelle description de la tâche.</span>
+<span class="sd">    :param dead_line: (optionnel) Nouvelle échéance (format datetime).</span>
+<span class="sd">    :param covered: (optionnel) Nouvel état &quot;covered&quot; (booléen).</span>
+<span class="sd">    :param assign: (optionnel) Nouvel assigné (ID de tasks_groups).</span>
+
+<span class="sd">    Exemple:</span>
+<span class="sd">    &gt;&gt;&gt; success = update_task_info(task_info_id=4, title=&#39;nouveau title&#39;, priority=2, assign=2)</span>
+<span class="sd">    &gt;&gt;&gt; if success:</span>
+<span class="sd">    &gt;&gt;&gt;     print(&quot;supprimé avec succes&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; success = update_task_info(task_info_id=4, status=2)</span>
+<span class="sd">    &gt;&gt;&gt; if success:</span>
+<span class="sd">    &gt;&gt;&gt;     print(&quot;supprimé avec succes&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">field</span><span class="p">:</span> <span class="n">value</span>
+        <span class="k">for</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">field</span> <span class="o">!=</span> <span class="s2">&quot;task_info_id&quot;</span>
+    <span class="p">}</span>
+
+    <span class="n">err</span> <span class="o">=</span> <span class="n">DB_API</span><span class="o">.</span><span class="n">update_task_infos</span><span class="p">(</span><span class="n">task_info_id</span><span class="p">,</span> <span class="n">_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># main()</span>
+    <span class="n">update_task_info</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;ds&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Auteur.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

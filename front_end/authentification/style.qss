@@ -1,0 +1,68 @@
+/* Styles globaux */
+QWidget#centralwidget {
+    background-color: #E6F2FF; /* Bleu très clair */
+    border: none;
+}
+
+/* Style pour les labels */
+QLabel {
+    color: #2C3E50; /* Gris bleuté foncé pour le texte */
+}
+
+/* Style pour les inputs et combos */
+QLineEdit, QComboBox, QDateEdit {
+    background-color: white;
+    border: 1px solid #3498DB;
+    border-radius: 5px;
+    padding: 6px;
+    color: #2C3E50;
+}
+
+/* Style pour les boutons */
+QPushButton {
+    color: white;
+    background-color: #3498DB; /* Bleu moyen */
+    border-radius: 8px;
+    padding: 8px 16px;
+}
+
+QPushButton:hover {
+    background-color: #2980B9; /* Bleu un peu plus foncé au survol */
+}
+
+QPushButton:pressed {
+    background-color: #21618C; /* Bleu encore plus foncé au clic */
+}
+
+/* Style pour les tableaux */
+QTableWidget {
+    background-color: white;
+    alternate-background-color: #F0F8FF; /* Bleu très clair pour les lignes alternées */
+    selection-background-color: #3498DB;
+    selection-color: white;
+}
+
+QHeaderView::section {
+    background-color: #3498DB;
+    color: white;
+    padding: 5px;
+    border: 1px solid #2980B9;
+}
+
+/* Style pour les onglets */
+QTabWidget::pane {
+    border: 1px solid #3498DB;
+}
+
+QTabBar::tab {
+    background-color: #E6F2FF;
+    color: #2C3E50;
+    padding: 8px 16px;
+    border: 1px solid #3498DB;
+    border-bottom: none;
+}
+
+QTabBar::tab:selected {
+    background-color: #3498DB;
+    color: white;
+}

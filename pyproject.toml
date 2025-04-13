@@ -1,0 +1,60 @@
+[tool.ruff]
+line-length = 99
+output-format = "full"
+lint.select = [
+    "E", # pycodestyle
+    "F", # Pyflakes
+    "W", # Warning
+    "B", # flake8-bugbear
+    "A", # flake8-builtins
+    "C4", # flake8-comprehensions
+    "T10", # flake8-debugger
+    "EXE", # flake8-executable,
+    "ISC", # flake8-implicit-str-concat
+    "G", # flake8-logging-format
+    "PIE", # flake8-pie
+    "T20", # flake8-print
+    "PT", # flake8-pytest-style
+    "RSE", # flake8-raise
+    "RET", # flake8-return
+    "TID", # flake8-tidy-imports
+    "ARG", # flake8-unused-arguments
+    "PGH", # pygrep-hooks
+    "PLC", # Pylint Convention
+    "PLE", # Pylint Errors
+    "PLW", # Pylint Warnings
+    "RUF", # Ruff-specific rules
+]
+
+extend-exclude = [
+    "*.pyc",
+    "__pycache__",
+]
+
+lint.ignore = [
+    "F403", # unable to detect undefined names from star imports
+    "F405", # undefined locals from star imports
+    "W605", # invalid escape sequence
+    "A003", # shadowing python builtins
+    "RET505", # unnecessary 'else' after 'return' statement
+    "RET504", # Unnecessary variable assignment before return statement
+    "RET507", # Unnecessary {branch} after continue statement
+    "PT011", # pytest-raises-too-broad
+    "PT012", # pytest.raises() block should contain a single simple statement
+    "PLW0603", # Using the global statement to update is discouraged
+    "PLW2901", # for loop variable overwritten by assignment target
+    "G004", # Logging statement uses f-string
+    "PIE790", # no-unnecessary-pass
+    "PIE810", # multiple-starts-ends-with
+    "PGH003", # Use specific rule codes when ignoring type issues
+    "PLC1901", # compare-to-empty-string
+    "B026",
+    "ISC001",
+    "T201", # pas d'erreur sur les prints
+    "PGH004" # pas d'erreur sur les noqa
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: mark a test as an integration test."
+]
